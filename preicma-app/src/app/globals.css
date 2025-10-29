@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --bg-hero-image: url("/backgroundlogin.webp");
+}
+
+@media (prefers-color-scheme: dark) {
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.bg-blue {
+  background-image: var(--bg-hero-image);
+  background-size: cover;
+}
+
+input {
+  background-color: white;
+}
+
+input::placeholder {
+  color: black;
+  font-weight: bold;
+}
