@@ -1,20 +1,36 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { loginUsuario } from "@/services/authService";
-import { animate, styler } from "popmotion";
+import { animate } from "popmotion";
 
 const Modal = ({ message, type, onClose }) => {
-  const [visible, setVisible] = useState(true);
+  const [opacity, setOpacity] = useState(0);
+  const [translateY, setTranslateY] = useState(-30);
 
-  useState(() => {
-    const modal = styler(document.querySelector("#modal"));
+  useEffect(() => {
     animate({
       from: { opacity: 0, y: -30 },
       to: { opacity: 1, y: 0 },
       duration: 400,
-      onUpdate: (v) => modal.set(v),
+      onUpdate: (v) => {
+        setOpacity(v.opacity);
+        setTranslateY(v.y);
+      },
     });
   }, []);
+
+  const handleClose = () => {
+    animate({
+      from: { opacity: 1, y: 0 },
+      to: { opacity: 0, y: -30 },
+      duration: 400,
+      onUpdate: (v) => {
+        setOpacity(v.opacity);
+        setTranslateY(v.y);
+      },
+      onComplete: onClose,
+    });
+  };
 
   const color =
     type === "error"
@@ -23,30 +39,20 @@ const Modal = ({ message, type, onClose }) => {
       ? "bg-green-500"
       : "bg-blue-500";
 
-  if (!visible) return null;
-
   return (
     <div
-      id="modal"
+      style={{
+        opacity,
+        transform: `translateY(${translateY}px)`,
+        transition: "all 0.3s ease-out",
+      }}
       className={`${color} fixed top-10 left-1/2 transform -translate-x-1/2 text-white p-4 px-8 rounded-xl shadow-lg z-50`}
     >
       <div className="flex justify-between items-center gap-4">
         <p className="font-semibold">{message}</p>
         <button
-          onClick={() => {
-            const modal = styler(document.querySelector("#modal"));
-            animate({
-              from: { opacity: 1, y: 0 },
-              to: { opacity: 0, y: -30 },
-              duration: 400,
-              onUpdate: (v) => modal.set(v),
-              onComplete: () => {
-                setVisible(false);
-                onClose();
-              },
-            });
-          }}
-          className="font-bold text-white text-xl"
+          onClick={handleClose}
+          className="font-bold text-white text-xl hover:opacity-80"
         >
           ×
         </button>
@@ -56,16 +62,11 @@ const Modal = ({ message, type, onClose }) => {
 };
 
 export default function Login() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [modal, setModal] = useState({ show: false, message: "", type: "" });
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleLogin = async () => {
     try {
