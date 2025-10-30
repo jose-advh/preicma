@@ -85,7 +85,7 @@ export default function Register() {
         <h2 className="text-3xl text-center text-white font-bold">
           ¡Bienvenido!
         </h2>
-        <div className="w-[80%]">
+        <div className="w-[90%] md:w-[80%]">
           <div className="flex flex-col gap-5 w-full">
             <input
               name="nombre"

@@ -44,7 +44,10 @@ export default function Login() {
         />
       )}
 
-      <img src="/preicmalogo.webp" className="w-[30%] md:w-[10%] rounded-full" />
+      <img
+        src="/preicmalogo.webp"
+        className="w-[30%] md:w-[10%] rounded-full"
+      />
 
       <form
         className="flex flex-col items-center gap-5 w-[90%] md:w-[35%] h-[60vh] p-4"
@@ -53,14 +56,35 @@ export default function Login() {
         <h2 className="text-3xl text-center text-white font-bold">
           Iniciar Sesión
         </h2>
-        <div className="w-[80%]">
+        <div className="w-[90%] md:w-[80%]">
           <div className="flex flex-col items-center gap-5 w-full">
-            <input name="email" type="email" onChange={handleChange} className="shadow-md p-2 rounded-xl w-[100%]" placeholder="Correo electrónico"/>
-            <input name="password" type="password" onChange={handleChange} className="shadow-md p-2 rounded-xl w-[100%]" placeholder="Contraseña"/>
+            <input
+              name="email"
+              type="email"
+              onChange={handleChange}
+              className="shadow-md p-2 rounded-xl w-[100%]"
+              placeholder="Correo electrónico"
+            />
+            <input
+              name="password"
+              type="password"
+              onChange={handleChange}
+              className="shadow-md p-2 rounded-xl w-[100%]"
+              placeholder="Contraseña"
+            />
           </div>
-          <p className="text-white mt-5">¿Aún no tienes una cuenta? <a href="/register" className="text-[#38BDF8]">Crea una aquí</a></p>
+          <p className="text-white mt-5">
+            ¿Aún no tienes una cuenta?{" "}
+            <a href="/register" className="text-[#38BDF8]">
+              Crea una aquí
+            </a>
+          </p>
         </div>
-        <button type="button" onClick={handleLogin} className="bg-black/50 p-2 px-6 rounded-xl text-white font-bold cursor-pointer">
+        <button
+          type="button"
+          onClick={handleLogin}
+          className="bg-black/50 p-2 px-6 rounded-xl text-white font-bold cursor-pointer"
+        >
           Ingresar
         </button>
       </form>
