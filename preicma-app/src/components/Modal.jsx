@@ -41,7 +41,7 @@ export default function Modal({ message, type = "info", onClose }) {
   return (
     <div
       style={{ opacity, transform: `translateY(${translateY}px)` }}
-      className={`${color} fixed top-10 left-1/2 -translate-x-1/2 text-white p-4 px-8 rounded-xl shadow-lg z-50`}
+      className={`${color} fixed top-10 left-1/2 -translate-x-1/2 text-white p-4 px-8 rounded-xl shadow-lg z-50 w-[90%] md:w-[35%]`}
     >
       <div className="flex justify-between items-center gap-4">
         <p className="font-semibold">{message}</p>
