@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { crearUsuario } from "@/services/usuarioService";
+import Modal from "@/components/Modal";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -11,9 +12,10 @@ export default function Register() {
     rol: "",
   });
 
-  const handleChange = (e) => {
+  const [modal, setModal] = useState({ show: false, message: "", type: "" });
+
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleRegister = async () => {
     try {
@@ -23,81 +25,63 @@ export default function Register() {
       });
 
       if (authError) throw authError;
-
       const userId = authData?.user?.id;
       if (!userId) throw new Error("No se pudo obtener el ID del usuario.");
 
-      const usuario = {
+      await crearUsuario({
         id: userId,
         nombre: formData.nombre,
         correo: formData.email,
         rol: formData.rol,
-      };
+      });
 
-      await crearUsuario(usuario);
-
-      alert("¡Cuenta creada! Revisa tu correo para confirmar.");
+      setModal({
+        show: true,
+        message: "¡Cuenta creada! Revisa tu correo para confirmar.",
+        type: "success",
+      });
     } catch (error) {
-      console.error(error);
-      alert("Error: " + error.message);
+      setModal({
+        show: true,
+        message: `Error: ${error.message}`,
+        type: "error",
+      });
     }
   };
 
   return (
-    <div className="flex flex-col justify-center gap-3 items-center min-h-screen bg-blue border">
-      <img
-        src="/preicmalogo.webp"
-        className="w-[30%] md:w-[10%] rounded-full"
-        alt="Preicma logo"
-      />
+    <div className="flex flex-col justify-center gap-3 items-center min-h-screen bg-blue">
+      {modal.show && (
+        <Modal
+          message={modal.message}
+          type={modal.type}
+          onClose={() => setModal({ show: false })}
+        />
+      )}
+
+      <img src="/preicmalogo.webp" className="w-[30%] md:w-[10%] rounded-full" />
+
       <form
-        className="flex flex-col justify-around items-center gap-5 w-[90%] md:w-[35%] h-[60vh] p-4"
+        className="flex flex-col items-center gap-5 w-[90%] md:w-[35%] h-[60vh] p-4"
         onSubmit={(e) => e.preventDefault()}
       >
-        <h2 className="text-3xl text-center text-white font-bold">
-          ¡Bienvenido!
-        </h2>
-        <input
-          name="nombre"
-          type="text"
-          onChange={handleChange}
-          className="shadow-md p-2 rounded-xl w-[80%]"
-          placeholder="Usuario"
-        />
-        <input
-          name="email"
-          type="text"
-          onChange={handleChange}
-          className="shadow-md p-2 rounded-xl w-[80%]"
-          placeholder="Email"
-        />
-        <input
-          name="password"
-          type="password"
-          onChange={handleChange}
-          className="shadow-md p-2 rounded-xl w-[80%]"
-          placeholder="Contraseña"
-        />
-        <select
-          name="rol"
-          onChange={handleChange}
-          className="shadow-md bg-white border-gray-300 rounded-xl p-2 w-[80%]"
-        >
-          <option value="">Elige tu Rol</option>
-          <option value="Estudiante">Estudiante</option>
-          <option value="Educador">Educador</option>
-        </select>
-
-        <button
-          type="button"
-          onClick={handleRegister}
-          className="bg-black/50 cursor-pointer p-2 px-6 rounded-xl text-white font-bold"
-        >
+        <h2 className="text-3xl text-center text-white font-bold">¡Bienvenido!</h2>
+        <div className="w-[80%]">
+          <div className="flex flex-col gap-5 w-full">
+            <input name="nombre" type="text" onChange={handleChange} className="shadow-md p-2 rounded-xl w-full" placeholder="Usuario"/>
+            <input name="email" type="text" onChange={handleChange} className="shadow-md p-2 rounded-xl w-full" placeholder="Email"/>
+            <input name="password" type="password" onChange={handleChange} className="shadow-md p-2 rounded-xl w-full" placeholder="Contraseña"/>
+            <select name="rol" onChange={handleChange} className="shadow-md bg-white rounded-xl p-2 w-full">
+              <option value="">Elige tu Rol</option>
+              <option value="Estudiante">Estudiante</option>
+              <option value="Educador">Educador</option>
+            </select>
+          </div>
+         <p className="text-white mt-5">¿Ya tienes una cuenta? <a href="/" className="text-[#38BDF8]">Inicia Sesión aquí</a></p>
+        </div>
+        <button type="button" onClick={handleRegister} className="bg-black/50 p-2 px-6 rounded-xl text-white font-bold cursor-pointer">
           Confirmar
         </button>
-        <a href="/" className="text-white text-2xl font-bold">
-          Iniciar Sesión
-        </a>
       </form>
     </div>
   );
