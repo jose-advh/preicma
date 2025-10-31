@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
 import { loginUsuario } from "@/services/authService";
+import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal";
 
 export default function Login() {
+  const router = useRouter();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [modal, setModal] = useState({ show: false, message: "", type: "" });
 
@@ -18,7 +20,7 @@ export default function Login() {
         message: "¡Inicio de sesión exitoso!",
         type: "success",
       });
-      console.log("Usuario:", data.user);
+      router.push("/dashboard");
     } catch (error) {
       let mensaje = "Ocurrió un error al iniciar sesión.";
       if (error.message.includes("Invalid login credentials"))

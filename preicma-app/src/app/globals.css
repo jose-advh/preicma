@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --bg-hero-image: url("/backgroundlogin.webp");
+  --bg-hero-image: url("/bgbody.jpg");
 }
 
 @media (prefers-color-scheme: dark) {
@@ -9,11 +9,9 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-}
-
-.bg-blue {
   background-image: var(--bg-hero-image);
   background-size: cover;
+  background-repeat: no-repeat;
 }
 
 input {
