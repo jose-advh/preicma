@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { montserrat } from "../ui/font";
 
 function SidebarLink({ href, icon, alt, label, color = "#a60ffa" }) {
   const isLogout = label === "Cerrar Sesión";
@@ -54,22 +55,27 @@ export default function LayoutDashboard({ children }) {
       </button>
 
       <aside
-        className={`fixed md:static bg-[#001F3F] flex flex-col justify-around items-center gap-10 py-8 min-h-screen shadow-xl transition-all duration-500 ease-in-out
+        className={`fixed md:static bg-[#001F3F] flex flex-col justify-around items-center gap-10 py-1 min-h-screen shadow-xl transition-all duration-500 ease-in-out
         ${menuAbierto ? "translate-x-0 w-[90%]" : "-translate-x-full w-[90%]"} 
         md:w-[20%] md:translate-x-0 z-[50]`}
       >
-        <div className="flex gap-5 items-center justify-center">
-          <img
+        <div className="p-6 border-b border-purple-500/20 relative">
+          <div className="flex gap-5 items-center justify-center">
+            <img
             src="/preicmalogo.webp"
             alt="Logo de preicma"
             className="w-[60px] md:w-[25%] rounded-full"
-          />
-          <h2 className="text-white text-lg md:text-1xl font-bold">
-            @PRE-ICMA
-          </h2>
+            />
+            <div>
+              <h2 className="text-white font-bold text-xl bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              PRE-ICMA
+              </h2>
+              <p className="text-gray-400 text-xs">¿Que esperas para <br />cumplir tus sueños?</p>
+            </div>
+          </div>
         </div>
 
-        <div className="w-full flex flex-col items-center justify-center">
+        <div className="w-full flex flex-col items-center justify-center  space-y-2 relative gap-13">
           <SidebarLink
             href="#"
             icon="/icons/gridicons--house.svg"
@@ -82,7 +88,7 @@ export default function LayoutDashboard({ children }) {
             alt="Icono de un folder"
             label="Mis Rutas"
           />
-          <SidebarLink
+          <SidebarLink 
             href="#"
             icon="/icons/game-icons--progression.svg"
             alt="Icono de progresión"

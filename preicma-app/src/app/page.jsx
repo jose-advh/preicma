@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import { loginUsuario } from "@/services/authService";
+import { loginUsuario } from "../services/authService";
 import { useRouter } from "next/navigation";
-import Modal from "@/components/Modal";
+import Modal from "../components/Modal";
 
 export default function Login() {
   const router = useRouter();
