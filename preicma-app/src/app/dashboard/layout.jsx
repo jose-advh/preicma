@@ -1,33 +1,26 @@
 "use client";
 import { useState } from "react";
-import { montserrat } from "../ui/font";
 
-function SidebarLink({ href, icon, alt, label, color = "#a60ffa" }) {
+function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa" }) {
   const isLogout = label === "Cerrar Sesión";
   const textColor = isLogout ? color : "#ffffff";
 
   return (
     <a
       href={href}
-      className="relative rounded-4xl border py-2 px-2 w-[75%] flex items-center mb-3 overflow-hidden transition-all duration-300 group"
+      className="relative w-[85%] flex items-center gap-3 rounded-xl border px-3 py-2.5 overflow-hidden transition-all duration-300 group"
       style={{ borderColor: color }}
     >
-      {/* Fondo animado */}
+      {/* Fondo hover */}
       <span
-        className="absolute left-0 top-0 h-full w-0 transition-all duration-500 ease-out group-hover:w-full"
-        style={{
-          backgroundColor: color,
-          opacity: 0.2,
-        }}
-      ></span>
+        className="absolute inset-0 w-0 group-hover:w-full transition-all duration-500"
+        style={{ backgroundColor: color, opacity: 0.15 }}
+      />
 
-      {/* Contenido alineado */}
-      <div className="z-10 flex items-center gap-[5px]">
-        <img src={icon} alt={alt} className="w-[28px] md:w-[32px] px-1" />
-        <span
-          className="font-bold text-sm md:text-base"
-          style={{ color: textColor }}
-        >
+      {/* Contenido */}
+      <div className="relative z-10 flex items-center gap-3">
+        <img src={icon} alt={alt} className="w-6" />
+        <span className="text-sm font-semibold" style={{ color: textColor }}>
           {label}
         </span>
       </div>
@@ -39,86 +32,88 @@ export default function LayoutDashboard({ children }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   return (
-    <div className="flex relative">
-      {/* Botón para abrir menu */}
+    <div className="flex h-screen bg-slate-950 text-white overflow-hidden">
       <button
         onClick={() => setMenuAbierto(!menuAbierto)}
         className="fixed top-5 left-5 z-[60] md:hidden"
       >
         <img
-          src={
-            menuAbierto ? "/icons/line-md--close.svg" : "/icons/jam--menu.svg"
-          }
-          alt={menuAbierto ? "Cerrar menú" : "Abrir menú"}
-          className="w-[32px] h-[32px] transition-transform duration-300 hover:scale-110"
+          src={menuAbierto ? "/icons/line-md--close.svg" : "/icons/jam--menu.svg"}
+          alt="menu"
+          className="w-8 h-8"
         />
       </button>
-
       <aside
-        className={`fixed md:static bg-[#001F3F] flex flex-col justify-around items-center gap-10 py-1 min-h-screen shadow-xl transition-all duration-500 ease-in-out
-        ${menuAbierto ? "translate-x-0 w-[90%]" : "-translate-x-full w-[90%]"} 
-        md:w-[20%] md:translate-x-0 z-[50]`}
+        className={`fixed md:static z-50 bg-[#001F3F] w-[85%] md:w-[18rem]
+        h-screen flex flex-col px-5 py-5 shadow-xl
+        transition-transform duration-500
+        ${menuAbierto ? "translate-x-0" : "-translate-x-full"} 
+        md:translate-x-0`}
       >
-        <div className="p-6 border-b border-purple-500/20 relative">
-          <div className="flex gap-5 items-center justify-center">
-            <img
+        {/* HEADER */}
+        <div className="flex items-center gap-3 border-b border-purple-500/20 pb-2">
+          <img
             src="/preicmalogo.webp"
-            alt="Logo de preicma"
-            className="w-[60px] md:w-[25%] rounded-full"
-            />
-            <div>
-              <h2 className="text-white font-bold text-xl bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            alt="Logo PRE-ICMA"
+            className="w-10 rounded-full"
+          />
+          <div>
+            <h2 className="font-bold text-base bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               PRE-ICMA
-              </h2>
-              <p className="text-gray-400 text-xs">¿Que esperas para <br />cumplir tus sueños?</p>
-            </div>
+            </h2>
+            <p className="text-gray-400 text-[11px] leading-tight">
+              Cumple tus sueños
+            </p>
           </div>
         </div>
 
-        <div className="w-full flex flex-col items-center justify-center  space-y-2 relative gap-13">
+        {/* iconos de navegacion */}
+        <nav className="flex flex-col justify-center items-center gap-7 mt-3 py-35">
           <SidebarLink
-            href="#"
             icon="/icons/gridicons--house.svg"
-            alt="Icono de una casa"
+            alt="Inicio"
             label="Inicio"
           />
           <SidebarLink
-            href="#"
             icon="/icons/mynaui--folder-solid.svg"
-            alt="Icono de un folder"
+            alt="Mis Rutas"
             label="Mis Rutas"
           />
-          <SidebarLink 
-            href="#"
+          <SidebarLink
             icon="/icons/game-icons--progression.svg"
-            alt="Icono de progresión"
+            alt="Mi Progreso"
             label="Mi Progreso"
           />
           <SidebarLink
-            href="#"
             icon="/icons/ion--rocket.svg"
-            alt="Icono de cohete"
+            alt="Ponte a Prueba"
             label="Ponte a Prueba"
           />
-        </div>
+        </nav>
 
-        <SidebarLink
-          href="#"
-          icon="/icons/line-md--close.svg"
-          alt="Icono de cerrar sesión"
-          label="Cerrar Sesión"
-          color="#ff3b3b"
-        />
+        {/* FOOTER */}
+        <div className="mt-auto pt-4 flex justify-center">
+          <SidebarLink
+            icon="/icons/line-md--close.svg"
+            alt="Cerrar sesión"
+            label="Cerrar Sesión"
+            color="#ff3b3b"
+          />
+        </div>
       </aside>
 
+      {/* OVERLAY MOBILE */}
       {menuAbierto && (
         <div
           onClick={() => setMenuAbierto(false)}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm md:hidden z-[40] transition-opacity duration-500"
-        ></div>
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm md:hidden z-40"
+        />
       )}
 
-      {children}
+      {/* MAIN (SCROLLABLE) */}
+      <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-slate-950">
+        {children}
+      </main>
     </div>
   );
 }
