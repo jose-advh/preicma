@@ -87,15 +87,13 @@ export default function ProgressDashboard() {
           </h1>
           <p className="text-gray-400 text-sm sm:text-base">Sigue tu evolución y alcanza tus metas</p>
         </div>
-
-        {/* Cards de estadísticas mejoradas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div className="group relative">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
             <div className="relative bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl p-6 border border-purple-400/30 transform group-hover:scale-105 group-hover:-translate-y-2 transition-all duration-300 shadow-2xl">
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                  <span className="text-2xl">📊</span>
+                  <img src="/icono__graficas.png" alt="graficas" />
                 </div>
                 <div className="bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
                   <span className="text-white/80 text-xs font-semibold">Esta semana</span>
@@ -109,14 +107,12 @@ export default function ProgressDashboard() {
               </div>
             </div>
           </div>
-
-          {/* Promedio Diario */}
           <div className="group relative">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
             <div className="relative bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl p-6 border border-blue-400/30 transform group-hover:scale-105 group-hover:-translate-y-2 transition-all duration-300 shadow-2xl">
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                  <span className="text-2xl">📈</span>
+                    <img src="/icono__estadisticas.png" alt="estadisticas" />
                 </div>
                 <div className="bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
                   <span className="text-white/80 text-xs font-semibold">Promedio</span>
@@ -125,19 +121,19 @@ export default function ProgressDashboard() {
               <h3 className="text-white/70 text-sm mb-2">Cuadernillos/día</h3>
               <p className="text-white text-4xl font-bold mb-1">{promedioSemanal}</p>
               <div className="flex items-center gap-2 text-yellow-300 text-sm">
-                <span>⭐</span>
+                <img className='w-5' src="/star.png" alt="estrella" />
                 <span>¡Excelente ritmo!</span>
               </div>
             </div>
           </div>
 
-          {/* Racha actual */}
+          {/* Racha*/}
           <div className="group relative">
             <div className="absolute inset-0 bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
             <div className="relative bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl p-6 border border-orange-400/30 transform group-hover:scale-105 group-hover:-translate-y-2 transition-all duration-300 shadow-2xl">
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm animate-pulse">
-                  <span className="text-2xl">🔥</span>
+                    <img src="/icono__fire.png" alt="fuego" />
                 </div>
                 <div className="bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
                   <span className="text-white/80 text-xs font-semibold">Días</span>
@@ -146,7 +142,7 @@ export default function ProgressDashboard() {
               <h3 className="text-white/70 text-sm mb-2">Racha Actual</h3>
               <p className="text-white text-4xl font-bold mb-1">{rachaActual}</p>
               <div className="flex items-center gap-2 text-yellow-300 text-sm">
-                <span>🎯</span>
+                <img className='w-6' src="/icono__flecha.png" alt="flecha" />
                 <span>¡Sigue así!</span>
               </div>
             </div>
@@ -158,7 +154,7 @@ export default function ProgressDashboard() {
             <div className="relative bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl p-6 border border-green-400/30 transform group-hover:scale-105 group-hover:-translate-y-2 transition-all duration-300 shadow-2xl">
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                  <span className="text-2xl">🎓</span>
+                    <img src="/icono__estudiantes.png" alt="estudiantes" />
                 </div>
                 <div className="bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
                   <span className="text-white/80 text-xs font-semibold">Total</span>
@@ -167,14 +163,14 @@ export default function ProgressDashboard() {
               <h3 className="text-white/70 text-sm mb-2">Progreso Global</h3>
               <p className="text-white text-4xl font-bold mb-1">{Math.round((totalCompletados/totalGeneral)*100)}%</p>
               <div className="flex items-center gap-2 text-blue-300 text-sm">
-                <span>📚</span>
+                <img className='w-6' src="/icono__libro.png" alt="cuadernillo" />
                 <span>{totalCompletados}/{totalGeneral} completados</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Gráfico de progreso semanal mejorado */}
+        {/* Gráfico de progreso semanal */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
           <div className="lg:col-span-2 relative group">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-3xl blur-2xl" />
@@ -228,56 +224,55 @@ export default function ProgressDashboard() {
           </div>
 
           {/* Gráfico de radar */}
-          <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-purple-500/10 rounded-3xl blur-2xl" />
-            <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-pink-500/30 shadow-2xl h-full">
-              <h2 className="text-white text-xl sm:text-2xl font-bold mb-2">Rendimiento</h2>
-              <p className="text-gray-400 text-sm mb-4">Por materia</p>
-              <ResponsiveContainer width="100%" height={280}>
-                <RadarChart data={radarData}>
-                  <PolarGrid stroke="#374151" />
-                  <PolarAngleAxis 
-                    dataKey="materia" 
-                    stroke="#9CA3AF"
-                    style={{ fontSize: '10px' }}
-                  />
-                  <PolarRadiusAxis stroke="#9CA3AF" />
-                  <Radar 
-                    name="Puntaje" 
-                    dataKey="puntaje" 
-                    stroke="#EC4899" 
-                    fill="#EC4899" 
-                    fillOpacity={0.6} 
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
+            <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-purple-500/10 rounded-3xl blur-2xl" />
+                <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-pink-500/30 shadow-2xl h-full">
+                    <h2 className="text-white text-xl sm:text-2xl font-bold mb-2">Rendimiento</h2>
+                    <p className="text-gray-400 text-sm mb-4">Por materia</p>
+                    <ResponsiveContainer width="100%" height={280}>
+                    <RadarChart data={radarData}>
+                    <PolarGrid stroke="#374151" />
+                    <PolarAngleAxis 
+                        dataKey="materia" 
+                        stroke="#9CA3AF"
+                        style={{ fontSize: '10px' }}
+                    />
+                    <PolarRadiusAxis stroke="#9CA3AF" />
+                    <Radar 
+                        name="Puntaje" 
+                        dataKey="puntaje" 
+                        stroke="#EC4899" 
+                        fill="#EC4899" 
+                        fillOpacity={0.6} 
+                    />
+                    </RadarChart>
+                </ResponsiveContainer>
+                </div>
             </div>
-          </div>
         </div>
 
-        {/* Progreso por materia mejorado */}
+        {/* Progreso por materia */}
         <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-3xl blur-2xl" />
-          <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-purple-500/30 shadow-2xl">
-            <div className="flex items-center justify-between mb-6 sm:mb-8">
-              <div>
-                <h2 className="text-white text-xl sm:text-2xl font-bold mb-2">Progreso por Materia</h2>
-                <p className="text-gray-400 text-sm">Cuadernillos completados en cada área</p>
-              </div>
-              <div className="hidden sm:flex items-center gap-2 bg-green-600/20 px-4 py-2 rounded-full border border-green-500/30">
-                <span className="text-green-400 text-sm font-semibold">Meta: 100%</span>
-              </div>
-            </div>
-            
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-3xl blur-2xl" />
+                <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-purple-500/30 shadow-2xl">
+                    <div className="flex items-center justify-between mb-6 sm:mb-8">
+                        <div>
+                        <h2 className="text-white text-xl sm:text-2xl font-bold mb-2">Progreso por Materia</h2>
+                        <p className="text-gray-400 text-sm">Cuadernillos completados en cada área</p>
+                        </div>
+                        <div className="hidden sm:flex items-center gap-2 bg-green-600/20 px-4 py-2 rounded-full border border-green-500/30">
+                            <span className="text-green-400 text-sm font-semibold">Meta: 100%</span>
+                        </div>
+                    </div>
             <div className="grid gap-4 sm:gap-6">
-              {subjectData.map((subject, index) => {
-                const percentage = (subject.completados / subject.total) * 100;
-                return (
-                  <div key={index} className="group/item relative">
-                    <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover/item:opacity-10 rounded-xl blur-xl transition-opacity duration-300"
-                         style={{ backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))` }} />
-                    <div className={`relative bg-gradient-to-r ${subject.color} p-[2px] rounded-xl sm:rounded-2xl transform group-hover/item:scale-[1.02] transition-all duration-300`}>
-                      <div className="bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+                {subjectData.map((subject, index) => {
+                    const percentage = (subject.completados / subject.total) * 100;
+                        return (
+                            <div key={index} className="group/item relative">
+                            <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover/item:opacity-10 rounded-xl blur-xl transition-opacity duration-300"
+                            style={{ backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))` }} />
+                        <div className={`relative bg-gradient-to-r ${subject.color} p-[2px] rounded-xl sm:rounded-2xl transform group-hover/item:scale-[1.02] transition-all duration-300`}>
+                        <div className="bg-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-6">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                           <div className="flex items-center gap-3">
                             <div className={`w-12 h-12 bg-gradient-to-br ${subject.color} rounded-xl flex items-center justify-center text-2xl shadow-lg transform group-hover/item:rotate-12 transition-transform duration-300`}>
@@ -294,9 +289,9 @@ export default function ProgressDashboard() {
                             <span className={`text-transparent bg-gradient-to-r ${subject.color} bg-clip-text text-xl sm:text-2xl font-bold`}>
                               {percentage.toFixed(0)}%
                             </span>
-                            {percentage >= 75 && <span className="text-xl">🏆</span>}
-                            {percentage >= 50 && percentage < 75 && <span className="text-xl">⭐</span>}
-                            {percentage < 50 && <span className="text-xl">💪</span>}
+                            {percentage >= 75 && <span className="text-xl"><img src="/icono__trofeo.png" alt="" /></span>}
+                            {percentage >= 50 && percentage < 75 && <span className="text-xl"><img src="/star.png" alt="" /></span>}
+                            {percentage < 50 && <span className="text-xl"><img src="/icono__brazo.png" alt="" /></span>}
                           </div>
                         </div>
                         
@@ -326,13 +321,13 @@ export default function ProgressDashboard() {
           </div>
         </div>
 
-        {/* Motivación final */}
+        {/* Motivación */}
         <div className="mt-6 sm:mt-8 relative group">
-          <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-3xl blur-2xl animate-pulse" />
-          <div className="relative bg-gradient-to-r from-yellow-600 to-orange-600 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-blue-500/20 rounded-3xl blur-2xl animate-pulse" />
+          <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-2xl">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <span className="text-4xl sm:text-5xl">🎯</span>
-              <div>
+                <img className='w-20' src="/icono__astronauta.png" alt="astronauta" />
+            <div>
                 <h3 className="text-white text-xl sm:text-2xl font-bold mb-1">¡Vas por buen camino!</h3>
                 <p className="text-white/80 text-sm sm:text-base">Sigue así y alcanzarás tus metas más rápido de lo que piensas</p>
               </div>
