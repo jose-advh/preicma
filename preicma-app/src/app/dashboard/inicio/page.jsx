@@ -8,55 +8,161 @@ export default function Dashboard() {
   const [hoveredYouTube, setHoveredYouTube] = useState(null);
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://www.tiktok.com/embed.js';
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
+  const script = document.createElement("script");
+  script.src = "https://www.tiktok.com/embed.js";
+  script.async = true;
+  document.body.appendChild(script);
+
+  script.onload = () => {
+    if (window.tiktokEmbedLoad) {
+      window.tiktokEmbedLoad();
+    }
+  };
+
+  return () => {
+    if (document.body.contains(script)) {
+      document.body.removeChild(script);
+    }
+  };
+}, []);
+
 
   const tiktokVideos = [
-    {
-      title: "Comunidad ICFES Marzo",
-      badge: "Estrategias",
-      color: "from-cyan-500 to-blue-600"
-    },
-    {
-      title: "Tips de Estudio",
-      badge: "Tutorías",
-      color: "from-purple-500 to-pink-600"
-    },
-    {
-      title: "Testimonios",
-      badge: "Resultados",
-      color: "from-green-500 to-emerald-600"
-    }
-  ];
+  {
+    id: "7582755770203114764",
+    title: "Tips de estudio",
+    badge: " Estrategias",
+    color: "from-cyan-500 to-blue-600"
+  },
+  {
+    id: "7583792581553802508",
+    title: "Comunidad de estudio",
+    badge: "Tutorías",
+    color: "from-purple-500 to-pink-600"
+  },
+  {
+    id: "7297703733486521606",
+    title: "Testimonios",
+    badge: "Resultados",
+    color: "from-green-500 to-emerald-600"
+  }
+];
 
-  const youtubeVideos = [
-    {
-      title: "Estrategias para Lectura Crítica",
-      icon: "📖 ",
-      views: "2.5K vistas"
-    },
-    {
-      title: "Matemáticas ICFES - Tips Esenciales",
-      icon: "🔢",
-      views: "3.2K vistas"
-    }
-  ];
+
+const youtubeVideos = [
+  {
+    title: "Tutoría en Vivo ICFES - Sesión 1",
+    icon: <img src="/icono__camara.png" alt="cam" />,
+    views: "En vivo ahora",
+    embedId: "jmz9GKtLI48"
+  },
+  {
+    title: "Tutoría en Vivo ICFES - Sesión 2",
+    icon: <img src="/icono__camara.png" alt="cam" />,
+    views: "En vivo ahora",
+    embedId: "QdQ3F0vjcdY"
+  }
+];
+
+
+
 
   return (
     <main className="min-h-screen w-full bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 p-3 sm:p-6 md:p-8 overflow-x-hidden">
       <div className="max-w-7xl mx-auto flex flex-col gap-10 sm:gap-12 md:gap-16">
         
-        {/* HERO SECTION - VIDEO PRINCIPAL */}
+        {/* HEADER */}
         <div className="relative">
-          {/* Elemento decorativo de fondo */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-gradient-to-br from-purple-600/20 to-purple-800/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-4 hover:scale-105 transition-transform duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-purple-500/30 rounded-xl flex items-center justify-center">
+                  <img src="/student.png" alt="estudiante" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">1.500+</p>
+                  <p className="text-xs text-gray-400">Estudiantes</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-600/20 to-emerald-800/20 backdrop-blur-sm border border-green-500/30 rounded-2xl p-4 hover:scale-105 transition-transform duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-green-500/30 rounded-xl flex items-center justify-center">
+                  <img src="/icono__graficas.png" alt="graficas" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">95%</p>
+                  <p className="text-xs text-gray-400">Satisfacción</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-yellow-600/20 to-orange-800/20 backdrop-blur-sm border border-yellow-500/30 rounded-2xl p-4 hover:scale-105 transition-transform duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-yellow-500/30 rounded-xl flex items-center justify-center">
+                  <img src="/star.png" alt="estrella" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">380+</p>
+                  <p className="text-xs text-gray-400">Puntaje Prom.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-600/20 to-cyan-800/20 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-4 hover:scale-105 transition-transform duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-blue-500/30 rounded-xl flex items-center justify-center">
+                  <img src="/icono__trofeo.png" alt="trofeo" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">200+</p>
+                  <p className="text-xs text-gray-400">Top 10%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative bg-gradient-to-r from-purple-900/40 via-pink-900/40 to-purple-900/40 backdrop-blur-sm border border-purple-500/30 rounded-3xl p-6 sm:p-8 mb-8 overflow-hidden">
+            <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl" />
+            
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex-1 text-center md:text-left">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3">
+                  Bienvenido a <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">PRE-ICMA</span>
+                </h1>
+                <p className="text-gray-300 text-sm sm:text-base md:text-lg mb-4">
+                  Tu camino hacia el éxito en el ICFES comienza aquí. Prepárate con los mejores.
+                </p>
+                <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                  <div className="bg-green-500/20 border border-green-500/50 px-4 py-2 rounded-full text-green-400 text-xs sm:text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    Clases en vivo
+                  </div>
+                  <div className="bg-blue-500/20 border border-blue-500/50 px-4 py-2 rounded-full text-blue-400 text-xs sm:text-sm font-semibold flex items-center gap-2">
+                    <img src="/icono__libro.png" alt="libro" />
+                    Material exclusivo
+                  </div>
+                  <div className="bg-purple-500/20 border border-purple-500/50 px-4 py-2 rounded-full text-purple-400 text-xs sm:text-sm font-semibold flex items-center gap-2">
+                    <img src="/icono__flecha.png" alt="flecha" />
+                    Simulacros reales
+                  </div>
+                </div>
+              </div>
+              
+              <div className="relative">
+                <div className="w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-pulse shadow-2xl shadow-yellow-500/50">
+                  <img src="/preicmalogo.webp" alt="PRE-ICMA" className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* VIDEO PRINCIPAL */}
+        <div className="relative">
           <div className="absolute -top-10 sm:-top-20 -right-10 sm:-right-20 w-48 sm:w-96 h-48 sm:h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
           <div className="absolute -bottom-10 sm:-bottom-20 -left-10 sm:-left-20 w-48 sm:w-96 h-48 sm:h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
           
@@ -65,13 +171,11 @@ export default function Dashboard() {
               ${expanded ? "flex-col lg:flex-row items-start" : "flex-col items-center"}
             `}
           >
-            {/* VIDEO PRINCIPAL */}
             <div
               className={`relative p-[3px] sm:p-[4px] rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-700 ease-in-out
                 ${expanded ? "w-full lg:w-[55%]" : "w-full max-w-4xl"}
               `}
             >
-              {/* Borde animado con colores de Colombia */}
               <div className="absolute inset-0 bg-[conic-gradient(from_0deg,#FCD116,#FFFFFF,#003893,#CE1126)] animate-spin" />
 
               <div className="relative bg-black rounded-2xl sm:rounded-3xl aspect-video overflow-hidden shadow-2xl">
@@ -88,7 +192,7 @@ export default function Dashboard() {
                   >
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="absolute bottom-3 sm:bottom-6 left-3 sm:left-6 right-3 sm:right-6 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <div className="bg-yellow-400 text-slate-900 px-3 sm:px-6 py-2 sm:py-3 rounded-full font-bold text-sm sm:text-lg inline-flex items-center gap-2 shadow-lg">
+                      <div className="bg-blue-400 text-slate-900 px-3 sm:px-6 py-2 sm:py-3 rounded-full font-bold text-sm sm:text-lg inline-flex items-center gap-2 shadow-lg">
                         <span>▶</span> 
                         <span className="hidden sm:inline">Ver contenido completo</span>
                         <span className="sm:hidden">Ver más</span>
@@ -108,32 +212,30 @@ export default function Dashboard() {
               )}
 
               {!expanded && (
-                <div className="absolute top-3 sm:top-6 left-3 sm:left-6 bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-lg flex items-center gap-1.5 sm:gap-2 animate-bounce">
-                  <img className="w-8 rounded-full object-cover" src="/preicmalogo.webp" alt="preicma logo" />
+                <div className="absolute top-3 sm:top-6 left-3 sm:left-6 bg-gradient-to-r from-pink-400 to-blue-500 text-slate-900 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-lg flex items-center gap-1.5 sm:gap-2 animate-bounce">
+                  <img className="w-12 rounded-full" src="/preicmalogo.webp" alt="logo preicma" />
                   PRE-ICMA
                 </div>
               )}
             </div>
-
-            {/* TEXTO VIDEO*/}
             {expanded && (
               <div className="w-full lg:w-[45%] animate-fade-in">
                 <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl h-full border border-purple-500/30 shadow-2xl">
                   <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center text-xl sm:text-2xl">
-                      <img className="w-8 rounded-full object-cover" src="/preicmalogo.webp" alt="preicma logo" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br  rounded-full flex items-center justify-center text-xl sm:text-2xl">
+                      <img className="rounded-full" src="/preicmalogo.webp" alt="logo preicma" />
                     </div>
                     <h1 className="text-xl sm:text-2xl font-bold text-white">
                       ¿Qué es PRE-ICMA?
                     </h1>
                   </div>
                   <p className="text-sm sm:text-base text-gray-300 leading-relaxed mb-3 sm:mb-4">
-                    Somos la <span className="text-yellow-400 font-semibold">comunidad de preparación ICFES</span> más efectiva de Colombia. Te preparamos con:
+                    Somos la <span className="text-purple-400 font-semibold">comunidad de preparación ICFES</span> más efectiva de Colombia. Te preparamos con:
                   </p>
                   <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-300">
                     <li className="flex items-start gap-2 sm:gap-3">
                       <span className="text-green-400 text-lg sm:text-xl">✓</span>
-                      <span>Clases en vivo</span>
+                      <span>Tutorías en vivo </span>
                     </li>
                     <li className="flex items-start gap-2 sm:gap-3">
                       <span className="text-green-400 text-lg sm:text-xl">✓</span>
@@ -141,7 +243,7 @@ export default function Dashboard() {
                     </li>
                     <li className="flex items-start gap-2 sm:gap-3">
                       <span className="text-green-400 text-lg sm:text-xl">✓</span>
-                      <span>Seguimineto personalizado</span>
+                      <span>Seguimiento personalizado</span>
                     </li>
                     <li className="flex items-start gap-2 sm:gap-3">
                       <span className="text-green-400 text-lg sm:text-xl">✓</span>
@@ -150,7 +252,7 @@ export default function Dashboard() {
                   </ul>
                   <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-purple-600/20 rounded-xl sm:rounded-2xl border border-purple-500/50">
                     <p className="text-purple-300 text-xs sm:text-sm font-semibold text-center">
-                      ¿Que esperas para unirte?
+                      ¿Qué esperas para unirte?
                     </p>
                   </div>
                 </div>
@@ -158,13 +260,11 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-
-        {/* TEXTO TIK TOK */}
         <div className="text-center px-4">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 sm:mb-3 bg-gradient-to-r from-yellow-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             Contenido Destacado
           </h2>
-          <p className="text-gray-400 text-sm sm:text-base md:text-lg">Aprende con nosotros</p>
+          <p className="text-gray-400 text-sm sm:text-base md:text-lg">Aprende con nuestras tutorías y consejos</p>
         </div>
 
         {/* VIDEOS TIKTOK */}
@@ -176,28 +276,28 @@ export default function Dashboard() {
               onMouseEnter={() => setHoveredTikTok(i)}
               onMouseLeave={() => setHoveredTikTok(null)}
             >
-              
               <div className={`absolute -top-2 sm:-top-3 left-1/2 -translate-x-1/2 z-10 bg-gradient-to-r ${video.color} text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-lg transform transition-all duration-300 ${hoveredTikTok === i ? 'scale-110' : 'scale-100'}`}>
                 {video.badge}
               </div>
               
               <div className={`bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300 border-2 ${hoveredTikTok === i ? 'border-purple-500 shadow-2xl shadow-purple-500/50 scale-105' : 'border-slate-700'}`}>
                 <div className="aspect-[9/16] max-h-[450px] sm:max-h-[540px] w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-xl bg-black">
-                  <blockquote 
-                    className="tiktok-embed w-full h-full" 
-                    cite="https://www.tiktok.com/@pre_icma/video/7583792581553802508" 
-                    data-video-id="7583792581553802508"
-                  > 
+                  <blockquote
+                    className="tiktok-embed w-full h-full"
+                    cite={`https://www.tiktok.com/@pre_icma/video/${video.id}`}
+                    data-video-id={video.id}
+                  >
                     <section className="flex items-center justify-center h-full">
-                      <a 
-                        target="_blank" 
-                        href="https://www.tiktok.com/@pre_icma?refer=embed"
+                      <a
+                        target="_blank"
+                        href={`https://www.tiktok.com/@pre_icma/video/${video.id}`}
                         className="text-white text-base sm:text-lg"
                       >
                         @pre_icma
-                      </a> 
-                    </section> 
+                      </a>
+                    </section>
                   </blockquote>
+
                 </div>
                 <h3 className="text-white font-bold text-base sm:text-lg mt-3 sm:mt-4 text-center">{video.title}</h3>
               </div>
@@ -205,15 +305,13 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* TEXTO YOUTUBE */}
         <div className="text-center px-4">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-3">
-            Nustras clases
+            Videos Educativos
           </h2>
           <p className="text-gray-400 text-sm sm:text-base">Contenido profundo para tu preparación</p>
         </div>
 
-        {/* VIDEOS YOUTUBE INFERIORES */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10">
           {youtubeVideos.map((video, i) => (
             <div
@@ -223,7 +321,6 @@ export default function Dashboard() {
               onMouseLeave={() => setHoveredYouTube(null)}
             >
               <div className={`bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300 border-2 ${hoveredYouTube === i ? 'border-yellow-500 shadow-2xl shadow-yellow-500/30' : 'border-slate-700'}`}>
-                {/* Título sobre el video */}
                 <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                   <span className="text-2xl sm:text-3xl">{video.icon}</span>
                   <div>
@@ -235,9 +332,11 @@ export default function Dashboard() {
                 <div className="aspect-video rounded-xl sm:rounded-2xl overflow-hidden shadow-xl relative">
                   <iframe
                     className="w-full h-full"
-                    src="https://www.youtube.com/embed/DcaDTQVlm1Q"
+                    src={`https://www.youtube.com/embed/${video.embedId}`}
                     allowFullScreen
                   />
+
+                  
                   <div className={`absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none transition-opacity duration-300 ${hoveredYouTube === i ? 'opacity-100' : 'opacity-0'}`}>
                     <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4">
                       <div className="bg-yellow-400 text-slate-900 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm inline-block">
@@ -250,6 +349,147 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
+        {/* TESTIMONIOS */}
+        <div className="relative px-2 sm:px-0">
+          <div className="absolute -top-20 left-1/4 w-64 h-64 bg-yellow-500/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-20 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
+          
+          <div className="text-center mb-8 sm:mb-12 relative z-10">
+            <div className="inline-block mb-4">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full font-bold text-sm animate-bounce">
+                <img src="/star.png" alt="estrella" />
+                <span>Nuestros resultados hablan solos</span>
+                <img src="/star.png" alt="estrella" />
+              </div>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3">
+              Historias de <span className="bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">Éxito</span>
+            </h2>
+            <p className="text-gray-400 text-base sm:text-lg">Lo que dicen nuestros estudiantes</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 relative z-10">
+            {/* Testimonio 1 - Dali Herrera */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-500 to-rose-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-300" />
+              <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 border-2 border-pink-500/30 group-hover:border-pink-500 transition-all duration-300 transform group-hover:scale-105 group-hover:-translate-y-2">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-lg group-hover:rotate-12 transition-transform duration-300">
+                    DH
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-lg">Dali Herrera</h3>
+                    <div className="flex gap-1 mt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className="text-yellow-400 text-sm">★</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="relative">
+                  <span className="absolute -top-2 -left-2 text-pink-500 text-5xl opacity-50">"</span>
+                  <p className="text-gray-300 text-sm leading-relaxed pl-6 italic">
+                    Gracias a PRE-ICMA conseguí marido, los recomiendo
+                  </p>
+                  <span className="absolute -bottom-4 -right-2 text-pink-500 text-5xl opacity-50">"</span>
+                </div>
+                <div className="mt-6 pt-4 border-t border-gray-700 flex items-center justify-between">
+                  <span className="text-xs text-gray-500">Estudiante 2023</span>
+                  <span className="text-pink-400 text-xs font-semibold">❤️ Historia de éxito</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonio 2 - Juan Guillermo Nox */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-300" />
+              <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 border-2 border-blue-500/30 group-hover:border-blue-500 transition-all duration-300 transform group-hover:scale-105 group-hover:-translate-y-2">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-lg group-hover:rotate-12 transition-transform duration-300">
+                    JN
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-lg">Juan Guillermo Nox</h3>
+                    <div className="flex gap-1 mt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className="text-yellow-400 text-sm">★</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="relative">
+                  <span className="absolute -top-2 -left-2 text-blue-500 text-5xl opacity-50">"</span>
+                  <p className="text-gray-300 text-sm leading-relaxed pl-6 italic">
+                    Soy talento Santamarta, estoy super feliz en mi carrera gracias a PRE-ICMA
+                  </p>
+                  <span className="absolute -bottom-4 -right-2 text-blue-500 text-5xl opacity-50">"</span>
+                </div>
+                <div className="mt-6 pt-4 border-t border-gray-700 flex items-center justify-between">
+                  <span className="text-xs text-gray-500">Estudiante 2024</span>
+                  <span className="text-blue-400 text-xs font-semibold">🎓 Universidad top</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonio 3 - Sergio */}
+            <div className="group relative md:col-span-2 lg:col-span-1">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-violet-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-300" />
+              <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-6 border-2 border-purple-500/30 group-hover:border-purple-500 transition-all duration-300 transform group-hover:scale-105 group-hover:-translate-y-2">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-lg group-hover:rotate-12 transition-transform duration-300">
+                    S
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-lg">Sergio</h3>
+                    <div className="flex gap-1 mt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className="text-yellow-400 text-sm">★</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="relative">
+                  <span className="absolute -top-2 -left-2 text-purple-500 text-5xl opacity-50">"</span>
+                  <p className="text-gray-300 text-sm leading-relaxed pl-6 italic">
+                    Gracias a PRE-ICMA tuve novia, mosa, amante y de todo, pero también gracias a ellos me rehabilité y soy un hombre de bien
+                  </p>
+                  <span className="absolute -bottom-4 -right-2 text-purple-500 text-5xl opacity-50">"</span>
+                </div>
+                <div className="mt-6 pt-4 border-t border-gray-700 flex items-center justify-between">
+                  <span className="text-xs text-gray-500">Estudiante 2024</span>
+                  <span className="text-purple-400 text-xs font-semibold">✨ Nueva vida</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Estadística de satisfacción */}
+          <div className="mt-12 relative z-10">
+            <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-green-500/30 text-center">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-yellow-400 text-3xl animate-pulse" style={{ animationDelay: `${i * 0.1}s` }}>★</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="h-12 w-px bg-gray-700 hidden sm:block" />
+                <div>
+                  <p className="text-3xl sm:text-4xl font-bold text-transparent bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text">
+                    4.9/5.0
+                  </p>
+                  <p className="text-gray-400 text-sm mt-1">Basado en +500 reseñas</p>
+                </div>
+                <div className="h-12 w-px bg-gray-700 hidden sm:block" />
+                <div>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">98%</p>
+                  <p className="text-gray-400 text-sm mt-1">Nos recomiendan</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 text-center shadow-2xl">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">
             ¿Listo para alcanzar tu mejor puntaje?
@@ -257,26 +497,31 @@ export default function Dashboard() {
           <p className="text-white/90 text-sm sm:text-base md:text-lg mb-4 sm:mb-6">
             Únete a PRE-ICMA y prepárate con los mejores para el ICFES 
           </p>
-          <a href="https://wa.me/573202106077?text=Hola%20quiero%20más%20información
-              " target="_blank" className="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg transform hover:scale-105 transition-all shadow-lg">
-            📲 Escribe "Quiero más información" al WhatsApp
+          <a href="https://wa.me/573202106077?text=Hola%20quiero%20más%20información%"
+              className="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg transform hover:scale-105 transition-all shadow-lg inline-flex items-center gap-3"
+            >
+              <img
+                src="/icono--whatsapp.png"
+                alt="icono whatsapp"
+                className="w-6 h-6 sm:w-7 sm:h-7"
+              />
+              Escribe "Quiero más información" al WhatsApp
           </a>
         </div>
-        
-
-        {/* REDES SOCIALES */}
         <div className="relative px-2 sm:px-0">
           <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 sm:w-64 h-48 sm:h-64 bg-pink-500/20 rounded-full blur-3xl" />
+          
           <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 sm:mb-3">
               Síguenos en Redes Sociales
             </h2>
             <p className="text-gray-400 text-sm sm:text-base md:text-lg">Contenido diario para tu preparación</p>
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 relative">
             {/* Instagram */}
             <a
-              href="https://www.instagram.com/preicma/"
+              href="https://www.instagram.com/pre_icma"
               target="_blank"
               rel="noopener noreferrer"
               className="group relative"
@@ -291,7 +536,7 @@ export default function Dashboard() {
                   </div>
                   <div className="text-center">
                     <h3 className="text-white font-bold text-lg sm:text-xl mb-1 sm:mb-2">Instagram</h3>
-                    <p className="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4">@preicma</p>
+                    <p className="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4">@pre_icma</p>
                     <div className="flex items-center justify-center gap-2 text-pink-400 font-semibold text-sm sm:text-base">
                       <span>Seguir</span>
                       <svg className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,8 +545,8 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div className="text-center pt-3 sm:pt-4 border-t border-gray-700 w-full">
-                    <p className="text-gray-400 text-xs">📸 Historias diarias</p>
-                    <p className="text-gray-400 text-xs">✨ Tips y motivación</p>
+                    <p className="text-gray-400 text-xs"> Historias diarias</p>
+                    <p className="text-gray-400 text-xs"> Tips y motivación</p>
                   </div>
                 </div>
               </div>
@@ -324,7 +569,7 @@ export default function Dashboard() {
                   </div>
                   <div className="text-center">
                     <h3 className="text-white font-bold text-lg sm:text-xl mb-1 sm:mb-2">TikTok</h3>
-                    <p className="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4">@pre_icma</p>
+                    <p className="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4">@pre-icma</p>
                     <div className="flex items-center justify-center gap-2 text-cyan-400 font-semibold text-sm sm:text-base">
                       <span>Seguir</span>
                       <svg className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -333,8 +578,8 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div className="text-center pt-3 sm:pt-4 border-t border-gray-700 w-full">
-                    <p className="text-gray-400 text-xs">🎥 Tutorías en vivo</p>
-                    <p className="text-gray-400 text-xs">🚀 Contenido viral</p>
+                    <p className="text-gray-400 text-xs"> Tutorías en vivo</p>
+                    <p className="text-gray-400 text-xs"> Contenido viral</p>
                   </div>
                 </div>
               </div>
@@ -342,7 +587,7 @@ export default function Dashboard() {
 
             {/* YouTube */}
             <a
-              href="https://www.youtube.com/channel/UCo5t1bnC1KDEZwxuKTou1Ew"
+              href="https://www.youtube.com/@PREICMA"
               target="_blank"
               rel="noopener noreferrer"
               className="group relative sm:col-span-2 lg:col-span-1"
@@ -357,7 +602,7 @@ export default function Dashboard() {
                   </div>
                   <div className="text-center">
                     <h3 className="text-white font-bold text-lg sm:text-xl mb-1 sm:mb-2">YouTube</h3>
-                    <p className="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4">@preicma</p>
+                    <p className="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4">@pre-icma</p>
                     <div className="flex items-center justify-center gap-2 text-red-400 font-semibold text-sm sm:text-base">
                       <span>Suscribirse</span>
                       <svg className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -366,8 +611,8 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div className="text-center pt-3 sm:pt-4 border-t border-gray-700 w-full">
-                    <p className="text-gray-400 text-xs">📺 Videos completos</p>
-                    <p className="text-gray-400 text-xs">🎓 Clases profundas</p>
+                    <p className="text-gray-400 text-xs"> Videos completos</p>
+                    <p className="text-gray-400 text-xs"> Clases profundas</p>
                   </div>
                 </div>
               </div>
