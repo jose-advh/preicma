@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 
 export const crearUsuario = async (usuario) => {
   const { data, error } = await supabase.from("usuarios").insert(usuario);
