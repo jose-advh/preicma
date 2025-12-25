@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import { crearUsuario } from "@/services/usuarioService";
-import Modal from "@/components/Modal";
+import { supabase } from "../../lib/supabaseClient";
+import { crearUsuario } from "../../services/usuarioService";
+import Modal from "../../components/Modal";
 
 export default function Register() {
   const [formData, setFormData] = useState({
