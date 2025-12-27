@@ -1,27 +1,36 @@
 "use client";
+// 27/12/2024, José Díaz, Gestor de Creación de Preguntas
+// Vista encargada de la creación de preguntas completas asociadas a Simulacros y Materias, con soporte para imágenes y múltiples opciones.
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { 
   Save, ImagePlus, FileText, HelpCircle, CheckCircle2, 
-  Plus, Trash2, Loader2, ImageIcon, Type, BookOpen, Layers
+  Plus, Trash2, Loader2, ImageIcon, Type, BookOpen, Layers, ArrowLeft
 } from "lucide-react";
 import { crearPreguntaCompleta, obtenerSimulacros, obtenerMaterias } from "../../../../services/questionService"; 
 
 export default function CrearPregunta() {
   const router = useRouter();
+  
+  // Estados de carga y notificaciones
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
 
+  // Estados de datos relacionales
   const [simulacros, setSimulacros] = useState([]); 
   const [materias, setMaterias] = useState([]);
   
+  // Selecciones del usuario
   const [selectedSimulacro, setSelectedSimulacro] = useState(""); 
   const [selectedMateria, setSelectedMateria] = useState("");
 
+  // Estados del contenido de la pregunta
   const [textoEnunciado, setTextoEnunciado] = useState("");
   const [textoPregunta, setTextoPregunta] = useState("");
   const [imagenesEnunciado, setImagenesEnunciado] = useState([]);
 
+  // Estado de las opciones (Texto o Imagen)
   const [opciones, setOpciones] = useState([
     { tipo: 'texto', valor: '', file: null, preview: null },
     { tipo: 'texto', valor: '', file: null, preview: null },
@@ -31,6 +40,7 @@ export default function CrearPregunta() {
   
   const [indiceCorrecta, setIndiceCorrecta] = useState(null);
 
+  // Carga inicial de datos necesarios (Simulacros y Materias)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -48,11 +58,19 @@ export default function CrearPregunta() {
     fetchData();
   }, []);
 
+  // --- Manejadores de Interfaz ---
+
+  // Navegación hacia atrás
+  const handleBack = () => {
+    router.push('/admin');
+  };
+
   const mostrarNotificacion = (msg, type) => {
     setNotification({ show: true, message: msg, type });
     setTimeout(() => setNotification({ show: false, message: "", type: "" }), 4000);
   };
 
+  // Gestión de imágenes del enunciado
   const handleEnunciadoImageChange = (e) => {
     const files = Array.from(e.target.files);
     const validFiles = files.filter(file => file.type.startsWith('image/'));
@@ -75,6 +93,7 @@ export default function CrearPregunta() {
     setImagenesEnunciado(copia);
   };
 
+  // Gestión de Opciones (Añadir, Eliminar, Cambiar Tipo)
   const addOption = () => {
     if (opciones.length < 6) {
       setOpciones([...opciones, { tipo: 'texto', valor: '', file: null, preview: null }]);
@@ -115,9 +134,11 @@ export default function CrearPregunta() {
     }
   };
 
+  // Envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validaciones
     if (!selectedSimulacro) return mostrarNotificacion("Selecciona un cuadernillo", "error");
     if (!selectedMateria) return mostrarNotificacion("Selecciona una materia", "error");
     if (!textoEnunciado.trim()) return mostrarNotificacion("Falta el enunciado", "error");
@@ -160,6 +181,16 @@ export default function CrearPregunta() {
   return (
     <div className="w-full max-w-5xl mx-auto p-6 animate-fade-in pb-20">
       
+      {/* Botón Volver */}
+      <button 
+        onClick={handleBack}
+        className="group flex items-center cursor-pointer gap-2 text-gray-400 hover:text-white mb-6 transition-all duration-200 hover:-translate-x-1"
+      >
+        <ArrowLeft size={20} className="group-hover:text-cyan-400 cursor-pointer transition-colors" />
+        <span className="text-sm font-medium">Volver al Panel de Administración</span>
+      </button>
+
+      {/* Encabezado */}
       <div className="mb-8 flex items-center gap-4">
         <div className="p-3 bg-cyan-600/20 rounded-xl border border-cyan-500/30">
           <HelpCircle className="text-cyan-400" size={32} />
@@ -167,14 +198,17 @@ export default function CrearPregunta() {
         <h1 className="text-3xl font-bold text-white">Gestor de Preguntas</h1>
       </div>
 
+      {/* Notificación flotante */}
       {notification.show && (
         <div className={`fixed top-5 right-5 z-[60] px-6 py-4 rounded-xl shadow-2xl border flex items-center gap-3 animate-bounce-in backdrop-blur-md ${notification.type === 'success' ? 'bg-green-900/80 border-green-500' : 'bg-red-900/80 border-red-500'}`}>
           <span className="font-semibold text-white">{notification.message}</span>
         </div>
       )}
 
+      {/* Formulario */}
       <form onSubmit={handleSubmit} className="space-y-6">
 
+        {/* Sección: Selección de Contexto (Cuadernillo y Materia) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-slate-900/50 backdrop-blur-md border border-indigo-500/30 rounded-3xl p-6 flex flex-col gap-4 shadow-lg shadow-indigo-500/10">
                 <div className="flex items-center gap-3 text-indigo-300">
@@ -225,6 +259,7 @@ export default function CrearPregunta() {
             </div>
         </div>
         
+        {/* Sección: Enunciado */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 bg-slate-900/50 backdrop-blur-md border border-purple-500/20 rounded-3xl p-6 flex flex-col">
             <h3 className="text-lg font-semibold text-purple-300 mb-4 flex items-center gap-2"><FileText size={20} /> Enunciado</h3>
@@ -269,6 +304,7 @@ export default function CrearPregunta() {
           </div>
         </div>
 
+        {/* Sección: Pregunta Central */}
         <div className="bg-slate-900/50 backdrop-blur-md border border-cyan-500/20 rounded-3xl p-6">
           <h3 className="text-lg font-semibold text-cyan-300 mb-4 flex items-center gap-2"><HelpCircle size={20} /> Pregunta</h3>
           <input
@@ -276,10 +312,11 @@ export default function CrearPregunta() {
             value={textoPregunta}
             onChange={(e) => setTextoPregunta(e.target.value)}
             placeholder="¿Cuál es la pregunta?"
-            className="w-full bg-black/20 border border-cyan-500/30 rounded-xl px-4 py-4 text-lg text-black placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-all"
+            className="w-full bg-black/20 border border-cyan-500/30 rounded-xl px-4 py-4 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-all"
           />
         </div>
 
+        {/* Sección: Opciones */}
         <div className="bg-slate-900/50 backdrop-blur-md border border-green-500/20 rounded-3xl p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-green-300 flex items-center gap-2"><CheckCircle2 size={20} /> Opciones</h3>
@@ -360,6 +397,7 @@ export default function CrearPregunta() {
           </div>
         </div>
 
+        {/* Botón de Guardar */}
         <div className="flex justify-end pt-4">
           <button type="submit" disabled={loading} className="px-8 py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-cyan-600 to-blue-600 text-white flex items-center gap-3 hover:scale-[1.02] transition-transform">
             {loading ? <Loader2 className="animate-spin" /> : <Save />} Guardar Pregunta
@@ -367,6 +405,7 @@ export default function CrearPregunta() {
         </div>
       </form>
 
+      {/* Estilos locales */}
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #8b5cf6; border-radius: 4px; }

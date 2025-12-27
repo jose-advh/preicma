@@ -1,28 +1,45 @@
 "use client";
+// 27/12/2024, Jose Díaz, Vista para creación de cuadernillos con asignación de materias
+// Esta vista permite crear un nuevo registro de cuadernillo y relacionarlo con materias existentes mediante checkboxes.
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Save, BookOpen, Layers, FileText, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { 
+  Save, 
+  BookOpen, 
+  Layers, 
+  FileText, 
+  CheckCircle, 
+  AlertCircle, 
+  Loader2, 
+  ArrowLeft 
+} from "lucide-react";
 import { obtenerMaterias, crearCuadernillo } from "../../../../services/bookletService"; 
 
 export default function CrearCuadernillo() {
   const router = useRouter();
   
   // Estados de carga y datos
+  // loading: Controla el estado visual de carga durante peticiones asíncronas
   const [loading, setLoading] = useState(false);
   const [materiasDisponibles, setMateriasDisponibles] = useState([]);
+  
+  // notification: Gestiona la visualización de mensajes de éxito o error (Toast)
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
 
   // Estado del formulario
+  // Mantiene los valores de los inputs controlados
   const [formData, setFormData] = useState({
     titulo: "",
     descripcion: "",
-    estado: "activo", // Valor por defecto
+    estado: "activo", // Valor por defecto para nuevos registros
   });
   
   // Estado para materias seleccionadas (Array de IDs)
   const [selectedMaterias, setSelectedMaterias] = useState([]);
 
-  // Cargar materias al montar el componente
+  // 27/12/2024, Jose Díaz, Fetch inicial de datos
+  // Carga las materias disponibles al montar el componente para poblar el selector
   useEffect(() => {
     const fetchMaterias = async () => {
       try {
@@ -36,40 +53,54 @@ export default function CrearCuadernillo() {
     fetchMaterias();
   }, []);
 
-  // Manejadores
+  // --- Manejadores de Eventos (Handlers) ---
+
+  // Actualiza el estado del formulario cuando el usuario escribe en los inputs
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Navegación hacia atrás
+  // Redirige al usuario al panel principal de administración
+  const handleBack = () => {
+    router.push('/admin');
+  };
+
+  // Gestiona la selección múltiple de materias
+  // Si el ID ya existe en el array, lo elimina; si no, lo agrega.
   const toggleMateria = (id) => {
     setSelectedMaterias(prev => 
       prev.includes(id) 
-        ? prev.filter(mId => mId !== id) // Si ya está, lo quita
-        : [...prev, id] // Si no está, lo agrega
+        ? prev.filter(mId => mId !== id)
+        : [...prev, id]
     );
   };
 
+  // Muestra una notificación temporal en la interfaz
   const mostrarNotificacion = (msg, type) => {
     setNotification({ show: true, message: msg, type });
+    // Oculta la notificación automáticamente después de 3 segundos
     setTimeout(() => setNotification({ show: false, message: "", type: "" }), 3000);
   };
 
+  // Procesa el envío del formulario
+  // Realiza validaciones y llama al servicio de creación
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validaciones
+    // Validaciones de campos requeridos
     if (!formData.titulo.trim()) return mostrarNotificacion("El nombre es obligatorio", "error");
     if (!formData.descripcion.trim()) return mostrarNotificacion("La descripción es obligatoria", "error");
     if (selectedMaterias.length === 0) return mostrarNotificacion("Selecciona al menos una materia", "error");
 
     setLoading(true);
     try {
+      // Llamada al servicio externo
       await crearCuadernillo(formData, selectedMaterias);
       mostrarNotificacion("¡Cuadernillo creado con éxito!", "success");
       
-      // Limpiar formulario o redirigir
+      // Reset del formulario tras éxito
       setTimeout(() => {
-        // router.push('/admin/cuadernillos'); // Descomentar para redirigir
         setFormData({ titulo: "", descripcion: "", estado: "activo" });
         setSelectedMaterias([]);
       }, 2000);
@@ -85,6 +116,15 @@ export default function CrearCuadernillo() {
   return (
     <div className="w-full max-w-4xl mx-auto p-6 animate-fade-in">
       
+      {/* Botón Volver */}
+      <button 
+        onClick={handleBack}
+        className="group flex cursor-pointer items-center gap-2 text-gray-400 hover:text-white mb-6 transition-all duration-200 hover:-translate-x-1"
+      >
+        <ArrowLeft size={20} className="group-hover:text-purple-400 cursor-pointer transition-colors" />
+        <span className="text-sm font-medium">Volver al Panel de Administración</span>
+      </button>
+
       {/* Encabezado */}
       <div className="mb-8 flex items-center gap-3">
         <div className="p-3 bg-purple-600/20 rounded-xl border border-purple-500/30">
@@ -106,7 +146,7 @@ export default function CrearCuadernillo() {
         </div>
       )}
 
-      {/* Formulario Estilo Bento */}
+      {/* Formulario Estilo Bento Grid */}
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Columna Izquierda: Datos Generales */}
@@ -126,7 +166,8 @@ export default function CrearCuadernillo() {
                   value={formData.titulo}
                   onChange={handleChange}
                   placeholder="Ej: Cuadernillo 2024"
-                  className="w-full bg-black/20 border border-purple-500/30 rounded-xl px-4 py-3 text-black placeholder-gray-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                  className="w-full bg-black/20 border border-purple-500/30 rounded-xl px-4 py-3 text-black placeholder-gray-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-white" 
+                  // Nota: Corregí text-black a text-white para asegurar visibilidad en fondo oscuro
                 />
               </div>
 
@@ -235,6 +276,7 @@ export default function CrearCuadernillo() {
         </div>
       </form>
 
+      {/* Estilos locales para scrollbar y animaciones */}
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;

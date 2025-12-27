@@ -1,4 +1,7 @@
 "use client";
+// 27/12/2024, José Dïaz, Panel de Administración
+// Panel principal de administración con diseño Bento Grid responsive.
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { 
@@ -10,6 +13,7 @@ LayoutDashboard,
 Sparkles
 } from "lucide-react";
 
+// Componente reutilizable para las tarjetas del grid
 function BentoCard({ title, subtitle, icon: Icon, color, onClick, className = "" }) {
 const [isHovered, setIsHovered] = useState(false);
 
@@ -24,11 +28,13 @@ return (
     borderColor: isHovered ? `${color}50` : 'rgba(255,255,255,0.1)'
     }}
 >
+    {/* Efecto de fondo radial */}
     <div 
     className={`absolute inset-0 transition-opacity duration-500 ${isHovered ? 'opacity-20' : 'opacity-0'}`}
     style={{ background: `radial-gradient(circle at center, ${color}, transparent 70%)` }}
     />
 
+    {/* Orb brillante en la esquina */}
     <div className={`absolute -right-4 -top-4 h-24 w-24 rounded-full transition-all duration-500 blur-2xl
     ${isHovered ? 'opacity-40 scale-150' : 'opacity-10 scale-100'}`}
     style={{ backgroundColor: color }}
@@ -55,6 +61,7 @@ return (
         </p>
     </div>
 
+    {/* Flecha indicadora */}
     <div className={`absolute bottom-6 right-6 transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
         <svg 
         width="24" 
@@ -76,6 +83,8 @@ return (
 
 export default function Admin() {
 const router = useRouter();
+
+// Configuración de las acciones del dashboard
 const actions = [
 {
     id: "create-booklet",
@@ -93,7 +102,7 @@ const actions = [
     icon: BookOpenCheck,
     color: "#06b6d4", 
     colSpan: "col-span-1", 
-    action: () => console.log("Editar cuadernillo")
+    action: () => router.push("/admin/cuadernillo/gestionar") 
 },
 {
     id: "create-question",
@@ -118,6 +127,7 @@ const actions = [
 return (
 <div className="p-6 md:p-10 min-h-full w-full max-w-7xl mx-auto space-y-8 animate-fade-in">
     
+    {/* Header Principal */}
     <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
     <div>
         <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent flex items-center gap-3">
@@ -127,19 +137,22 @@ return (
         <p className="text-gray-400 mt-2">Gestiona todo el contenido educativo desde aquí.</p>
     </div>
     
-    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-900/30 border border-purple-500/30 backdrop-blur-sm">
+    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-900/30 border border-purple-500/30 backdrop-blur-sm w-fit">
         <Sparkles size={16} className="text-yellow-400 animate-pulse" />
         <span className="text-sm font-medium text-purple-200">Modo Superusuario Activo</span>
     </div>
     </header>
 
+    {/* Grid Bento */}
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-[180px]">
     
-    <div className="col-span-1 md:col-span-3 lg:col-span-4 rounded-3xl bg-gradient-to-r from-purple-900/40 via-blue-900/20 to-slate-900/40 border border-white/10 p-8 flex flex-col md:flex-row items-center justify-between relative overflow-hidden group">
+    {/* Tarjeta de Resumen (Tarjeta Grande Superior) */}
+    <div className="col-span-1 md:col-span-3 lg:col-span-4 rounded-3xl bg-gradient-to-r from-purple-900/40 via-blue-900/20 to-slate-900/40 border border-white/10 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between relative overflow-hidden group h-auto md:h-full">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" /> 
-        <div className="relative z-10">
+        
+        <div className="relative z-10 text-center md:text-left">
             <h2 className="text-2xl font-bold text-white mb-2">Resumen del Sistema</h2>
-            <div className="flex gap-6 mt-4">
+            <div className="flex gap-6 mt-4 justify-center md:justify-start">
                 <div className="text-center">
                     <p className="text-3xl font-bold text-purple-400">12</p>
                     <p className="text-xs text-gray-400 uppercase tracking-wide">Cuadernillos</p>
@@ -151,11 +164,16 @@ return (
                 </div>
             </div>
         </div>
-        <div className="relative z-10 mt-6 md:mt-0 px-6 py-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
-            <span className="text-sm text-gray-300">Última actualización: Hoy, 10:42 AM</span>
+
+        {/* Badge de Actualización Responsive */}
+        <div className="relative z-10 mt-6 md:mt-0 px-4 py-2 md:px-6 md:py-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md w-full md:w-auto flex justify-center">
+            <span className="text-xs md:text-sm text-gray-300 text-center">
+                Última actualización: <span className="block sm:inline font-semibold text-white/90">Hoy, 10:42 AM</span>
+            </span>
         </div>
     </div>
 
+    {/* Mapeo de Tarjetas de Acción */}
     {actions.map((action) => (
         <BentoCard
         key={action.id}
