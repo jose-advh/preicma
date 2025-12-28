@@ -164,13 +164,6 @@ return (
                 </div>
             </div>
         </div>
-
-        {/* Badge de Actualización Responsive */}
-        <div className="relative z-10 mt-6 md:mt-0 px-4 py-2 md:px-6 md:py-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md w-full md:w-auto flex justify-center">
-            <span className="text-xs md:text-sm text-gray-300 text-center">
-                Última actualización: <span className="block sm:inline font-semibold text-white/90">Hoy, 10:42 AM</span>
-            </span>
-        </div>
     </div>
 
     {/* Mapeo de Tarjetas de Acción */}

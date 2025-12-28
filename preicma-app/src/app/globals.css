@@ -14,11 +14,11 @@ body {
   background-repeat: no-repeat;
 }
 
-input {
-  background-color: white;
+.input-white {
+  background-color: white !important;
 }
 
-input::placeholder {
-  color: black;
-  font-weight: bold;
+.input-white::placeholder {
+  color: black !important;
+  font-weight: bold !important;
 }

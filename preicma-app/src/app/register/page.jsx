@@ -92,7 +92,7 @@ export default function Register() {
               type="text"
               value={formData.nombre}
               onChange={handleChange}
-              className="shadow-md p-2 rounded-xl w-full"
+              className="shadow-md p-2 rounded-xl w-full input-white"
               placeholder="Usuario"
             />
             <input
@@ -100,7 +100,7 @@ export default function Register() {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              className="shadow-md p-2 rounded-xl w-full"
+              className="shadow-md p-2 rounded-xl w-full input-white" 
               placeholder="Email"
             />
             <input
@@ -108,18 +108,18 @@ export default function Register() {
               type="password"
               value={formData.password}
               onChange={handleChange}
-              className="shadow-md p-2 rounded-xl w-full"
+              className="shadow-md p-2 rounded-xl w-full input-white"
               placeholder="Contraseña"
             />
             <select
               name="rol"
               value={formData.rol}
               onChange={handleChange}
-              className="shadow-md bg-white rounded-xl p-2 w-full"
+              className="shadow-md bg-white rounded-xl p-2 w-full input-white"
             >
               <option value="">Elige tu Rol</option>
               <option value="Estudiante">Estudiante</option>
-              <option value="Educador">Educador</option>
+              <option value="admin">Educador</option>
             </select>
           </div>
           <p className="text-white mt-5">

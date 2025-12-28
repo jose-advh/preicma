@@ -179,7 +179,7 @@ export default function CrearPregunta() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-6 animate-fade-in pb-20">
+    <div className="w-full max-w-6xl mx-auto p-6 animate-fade-in pb-20">
       
       {/* Botón Volver */}
       <button 

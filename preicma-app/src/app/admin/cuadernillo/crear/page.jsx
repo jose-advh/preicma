@@ -114,7 +114,7 @@ export default function CrearCuadernillo() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 animate-fade-in">
+    <div className="w-full max-w-6xl mx-auto p-6 animate-fade-in">
       
       {/* Botón Volver */}
       <button 
