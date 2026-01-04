@@ -98,7 +98,7 @@ export default function LayoutDashboard({ children }) {
       badge: null 
     },
     { 
-      href: "/dashboard/rutas", 
+      href: "/dashboard", 
       icon: "/icons/mynaui--folder-solid.svg", 
       label: "Mis Rutas", 
       color: "#06b6d4", 
