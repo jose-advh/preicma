@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link"; // Importamos Link para navegación optimizada
-import { usePathname } from "next/navigation"; // Importamos hook para saber la ruta actual
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive = false, badge = null }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -13,7 +13,8 @@ function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive
       href={href}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`relative w-full flex items-center gap-3 rounded-2xl border-2 px-4 py-3.5 overflow-hidden transition-all duration-300 group
+      // CAMBIO: Reduje py-3.5 a py-2.5 para que los botones sean menos altos
+      className={`relative w-full flex items-center gap-3 rounded-2xl border-2 px-4 py-2.5 overflow-hidden transition-all duration-300 group
         ${isActive ? 'bg-purple-600/20 border-purple-500 shadow-lg shadow-purple-500/30' : 'border-transparent hover:border-purple-500/50'}
         ${isHovered ? 'scale-105 -translate-x-1' : 'scale-100'}
       `}
@@ -31,26 +32,27 @@ function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive
       />
       {isActive && (
         <span
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full"
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full"
           style={{ backgroundColor: color }}
         />
       )}
       <div className="relative z-10 flex items-center gap-3 w-full">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300
+        {/* CAMBIO: Reduje el contenedor del icono de w-10 h-10 a w-8 h-8 */}
+        <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300
           ${isHovered ? 'rotate-12 scale-110' : 'rotate-0 scale-100'}
         `}
         style={{ 
           backgroundColor: isHovered || isActive ? `${color}30` : 'transparent' 
         }}
         >
+          {/* Ajusté el tamaño del icono */}
           <img 
             src={icon} 
             alt={alt} 
-            className={`w-6 transition-all duration-300 ${isHovered ? 'brightness-125' : 'brightness-100'}`}
+            className={`w-5 transition-all duration-300 ${isHovered ? 'brightness-125' : 'brightness-100'}`}
           />
         </div>
 
-        {/* Texto */}
         <span 
           className={`text-sm font-bold transition-all duration-300 ${isHovered ? 'translate-x-1' : 'translate-x-0'}`}
           style={{ color: textColor }}
@@ -59,7 +61,7 @@ function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive
         </span>
 
         {badge && (
-          <span className="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
+          <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">
             {badge}
           </span>
         )}
@@ -88,9 +90,8 @@ function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive
 
 export default function LayoutDashboard({ children }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const pathname = usePathname(); // Obtenemos la ruta actual (ej: /dashboard/rutas)
+  const pathname = usePathname(); 
 
-  // Configuración de rutas (Ajusta los href según tus carpetas reales en /app)
   const navLinks = [
     { 
       href: "/dashboard", 
@@ -137,53 +138,57 @@ export default function LayoutDashboard({ children }) {
 
       <aside
         className={`fixed md:static z-50 bg-gradient-to-b from-[#001F3F] via-[#001a35] to-[#00152b]
-        w-[85%] md:w-[20rem] h-screen flex flex-col px-6 py-6 shadow-2xl
+        w-[85%] md:w-[20rem] h-screen flex flex-col 
+        px-4 py-4 shadow-2xl 
         border-r border-purple-500/20
         transition-transform duration-500 ease-in-out
         ${menuAbierto ? "translate-x-0" : "-translate-x-full"} 
         md:translate-x-0`}
       >
-        <div className="relative bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-4 mb-6 overflow-hidden">
+        {/* CAMBIO: Reduje mb-6 a mb-4 y p-4 a p-3 */}
+        <div className="relative bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-3 mb-4 overflow-hidden shrink-0">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
           
           <div className="relative flex items-center gap-3">
             <div className="relative">
+              {/* CAMBIO: Reduje tamaño de imagen de w-14 a w-10 */}
               <img
                 src="/preicmalogo.webp"
                 alt="Logo PRE-ICMA"
-                className="w-14 h-14 rounded-full ring-2 ring-purple-400/50 shadow-lg"
+                className="w-10 h-10 rounded-full ring-2 ring-purple-400/50 shadow-lg"
               />
-              <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-[#001F3F] rounded-full animate-pulse" />
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#001F3F] rounded-full animate-pulse" />
             </div>
             <div>
-              <h2 className="font-bold text-lg bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+              <h2 className="font-bold text-base bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
                 PRE-ICMA
               </h2>
-              <p className="text-gray-400 text-xs leading-tight flex items-center gap-1">
-                <img className="w-5" src="/star.png" alt="estrella" />
+              <p className="text-gray-400 text-[10px] leading-tight flex items-center gap-1">
+                <img className="w-4" src="/star.png" alt="estrella" />
                 Cumple tus sueños
               </p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="bg-purple-600/10 backdrop-blur-sm border border-purple-500/30 rounded-xl p-3 text-center hover:scale-105 transition-transform duration-300 cursor-pointer">
-            <p className="text-2xl font-bold text-purple-400">7</p>
-            <p className="text-xs text-gray-400">Racha</p>
+        {/* CAMBIO: Reduje mb-6 a mb-4 */}
+        <div className="grid grid-cols-2 gap-3 mb-4 shrink-0">
+          <div className="bg-purple-600/10 backdrop-blur-sm border border-purple-500/30 rounded-xl p-2 text-center hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <p className="text-xl font-bold text-purple-400">7</p>
+            <p className="text-[10px] text-gray-400">Racha</p>
           </div>
-          <div className="bg-cyan-600/10 backdrop-blur-sm border border-cyan-500/30 rounded-xl p-3 text-center hover:scale-105 transition-transform duration-300 cursor-pointer">
-            <p className="text-2xl font-bold text-cyan-400">24</p>
-            <p className="text-xs text-gray-400">Lecciones</p>
+          <div className="bg-cyan-600/10 backdrop-blur-sm border border-cyan-500/30 rounded-xl p-2 text-center hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <p className="text-xl font-bold text-cyan-400">24</p>
+            <p className="text-[10px] text-gray-400">Lecciones</p>
           </div>
         </div>
 
-        <nav className="flex flex-col gap-3 flex-1 overflow-y-auto custom-scrollbar">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
+        {/* CAMBIO: Reduje gap-3 a gap-2 para juntar más los botones */}
+        <nav className="flex flex-col gap-2 flex-1 overflow-y-auto custom-scrollbar">
+          <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1 px-2">
             Navegación
           </p>
           {navLinks.map((link) => (
-            // Ya no necesitamos onClick para setActiveLink, usamos pathname
             <div key={link.label}>
               <SidebarLink
                 href={link.href}
@@ -191,7 +196,6 @@ export default function LayoutDashboard({ children }) {
                 alt={link.label}
                 label={link.label}
                 color={link.color}
-                // isActive se calcula automáticamente comparando la URL actual con el href del link
                 isActive={pathname === link.href}
                 badge={link.badge}
               />
@@ -199,20 +203,21 @@ export default function LayoutDashboard({ children }) {
           ))}
         </nav>
 
-        <div className="mt-6 mb-4 bg-gradient-to-br from-green-600/20 to-emerald-600/20 backdrop-blur-sm border border-green-500/30 rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold text-gray-300">Progreso Diario</p>
-            <p className="text-xs font-bold text-green-400">75%</p>
+        {/* CAMBIO: Ajuste de márgenes para la sección inferior */}
+        <div className="mt-2 mb-2 bg-gradient-to-br from-green-600/20 to-emerald-600/20 backdrop-blur-sm border border-green-500/30 rounded-2xl p-3 shrink-0">
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[10px] font-semibold text-gray-300">Progreso Diario</p>
+            <p className="text-[10px] font-bold text-green-400">75%</p>
           </div>
-          <div className="w-full bg-gray-700/50 rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-gray-700/50 rounded-full h-1.5 overflow-hidden">
             <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-full rounded-full transition-all duration-1000" style={{ width: '75%' }} />
           </div>
-          <p className="text-xs text-gray-400 mt-2">3 de 4 lecciones completadas</p>
+          <p className="text-[10px] text-gray-400 mt-1">3 de 4 lecciones completadas</p>
         </div>
 
-        <div className="pt-4 border-t border-purple-500/20">
+        <div className="pt-2 border-t border-purple-500/20 shrink-0">
           <SidebarLink
-            href="/" // Redirige al inicio (landing page) al cerrar sesión
+            href="/" 
             icon="/icons/line-md--close.svg"
             alt="Cerrar sesión"
             label="Cerrar Sesión"
@@ -241,7 +246,7 @@ export default function LayoutDashboard({ children }) {
           animation: shimmer 3s infinite;
         }
         .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
+          width: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
           background: transparent;
