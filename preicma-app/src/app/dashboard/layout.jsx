@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link"; // Importamos Link para navegación optimizada
+import { usePathname } from "next/navigation"; // Importamos hook para saber la ruta actual
 
 function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive = false, badge = null }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -7,7 +9,7 @@ function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive
   const textColor = isLogout ? color : "#ffffff";
 
   return (
-    <a
+    <Link
       href={href}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -80,19 +82,44 @@ function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive
           <span className="absolute bottom-2 right-8 w-1 h-1 rounded-full bg-white/40 animate-ping" style={{ animationDelay: '0.2s' }} />
         </>
       )}
-    </a>
+    </Link>
   );
 }
 
 export default function LayoutDashboard({ children }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const [activeLink, setActiveLink] = useState("Inicio");
+  const pathname = usePathname(); // Obtenemos la ruta actual (ej: /dashboard/rutas)
 
+  // Configuración de rutas (Ajusta los href según tus carpetas reales en /app)
   const navLinks = [
-    { icon: "/icons/gridicons--house.svg", label: "Inicio", color: "#8b5cf6", badge: null },
-    { icon: "/icons/mynaui--folder-solid.svg", label: "Mis Rutas", color: "#06b6d4", badge: "3" },
-    { icon: "/icons/game-icons--progression.svg", label: "Mi Progreso", color: "#10b981", badge: null },
-    { icon: "/icons/ion--rocket.svg", label: "Ponte a Prueba", color: "#f59e0b", badge: "NEW" },
+    { 
+      href: "/dashboard", 
+      icon: "/icons/gridicons--house.svg", 
+      label: "Inicio", 
+      color: "#8b5cf6", 
+      badge: null 
+    },
+    { 
+      href: "/dashboard/rutas", 
+      icon: "/icons/mynaui--folder-solid.svg", 
+      label: "Mis Rutas", 
+      color: "#06b6d4", 
+      badge: "3" 
+    },
+    { 
+      href: "/dashboard/progreso", 
+      icon: "/icons/game-icons--progression.svg", 
+      label: "Mi Progreso", 
+      color: "#10b981", 
+      badge: null 
+    },
+    { 
+      href: "/dashboard/cuadernillos", 
+      icon: "/icons/ion--rocket.svg", 
+      label: "Ponte a Prueba", 
+      color: "#f59e0b", 
+      badge: "NEW" 
+    },
   ];
 
   return (
@@ -156,13 +183,16 @@ export default function LayoutDashboard({ children }) {
             Navegación
           </p>
           {navLinks.map((link) => (
-            <div key={link.label} onClick={() => setActiveLink(link.label)}>
+            // Ya no necesitamos onClick para setActiveLink, usamos pathname
+            <div key={link.label}>
               <SidebarLink
+                href={link.href}
                 icon={link.icon}
                 alt={link.label}
                 label={link.label}
                 color={link.color}
-                isActive={activeLink === link.label}
+                // isActive se calcula automáticamente comparando la URL actual con el href del link
+                isActive={pathname === link.href}
                 badge={link.badge}
               />
             </div>
@@ -182,6 +212,7 @@ export default function LayoutDashboard({ children }) {
 
         <div className="pt-4 border-t border-purple-500/20">
           <SidebarLink
+            href="/" // Redirige al inicio (landing page) al cerrar sesión
             icon="/icons/line-md--close.svg"
             alt="Cerrar sesión"
             label="Cerrar Sesión"
