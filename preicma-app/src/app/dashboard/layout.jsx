@@ -159,7 +159,7 @@ export default function LayoutDashboard({ children }) {
       {/* BOTÓN DE MENÚ (Derecha y sin fondo como pediste) */}
       <button
         onClick={() => setMenuAbierto(!menuAbierto)}
-        className="fixed top-5 right-5 z-[60] md:hidden p-2 transition-all duration-300 hover:scale-110 focus:outline-none"
+        className="fixed top-5 right-5 z-[60] md:hidden p-2 bg-white rounded-2xl transition-all duration-300 hover:scale-110 focus:outline-none"
       >
         <img
           src={menuAbierto ? "/icons/line-md--close.svg" : "/icons/jam--menu.svg"}
