@@ -13,7 +13,6 @@ function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive
       href={href}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      // CAMBIO: Reduje py-3.5 a py-2.5 para que los botones sean menos altos
       className={`relative w-full flex items-center gap-3 rounded-2xl border-2 px-4 py-2.5 overflow-hidden transition-all duration-300 group
         ${isActive ? 'bg-purple-600/20 border-purple-500 shadow-lg shadow-purple-500/30' : 'border-transparent hover:border-purple-500/50'}
         ${isHovered ? 'scale-105 -translate-x-1' : 'scale-100'}
@@ -37,7 +36,6 @@ function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive
         />
       )}
       <div className="relative z-10 flex items-center gap-3 w-full">
-        {/* CAMBIO: Reduje el contenedor del icono de w-10 h-10 a w-8 h-8 */}
         <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300
           ${isHovered ? 'rotate-12 scale-110' : 'rotate-0 scale-100'}
         `}
@@ -45,7 +43,6 @@ function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive
           backgroundColor: isHovered || isActive ? `${color}30` : 'transparent' 
         }}
         >
-          {/* Ajusté el tamaño del icono */}
           <img 
             src={icon} 
             alt={alt} 
@@ -125,14 +122,18 @@ export default function LayoutDashboard({ children }) {
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-950 via-purple-950/20 to-slate-950 text-white overflow-hidden">
+      
+      {/* BOTÓN DE MENÚ MODIFICADO */}
       <button
         onClick={() => setMenuAbierto(!menuAbierto)}
-        className="fixed top-5 left-5 z-[60] md:hidden bg-purple-600 hover:bg-purple-700 p-2 rounded-xl shadow-lg transition-all duration-300 hover:scale-110"
+        // CAMBIOS AQUÍ: left-5 -> right-5, eliminados bg-purple, shadow, etc.
+        className="fixed top-5 right-5 z-[60] md:hidden bg-white rounded-2xl p-2 transition-all duration-300 hover:scale-110 focus:outline-none"
       >
         <img
           src={menuAbierto ? "/icons/line-md--close.svg" : "/icons/jam--menu.svg"}
           alt="menu"
-          className="w-6 h-6"
+          // Agregué drop-shadow para asegurar que se vea bien sobre cualquier fondo
+          className="w-8 h-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" 
         />
       </button>
 
@@ -145,13 +146,11 @@ export default function LayoutDashboard({ children }) {
         ${menuAbierto ? "translate-x-0" : "-translate-x-full"} 
         md:translate-x-0`}
       >
-        {/* CAMBIO: Reduje mb-6 a mb-4 y p-4 a p-3 */}
         <div className="relative bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-3 mb-4 overflow-hidden shrink-0">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
           
           <div className="relative flex items-center gap-3">
             <div className="relative">
-              {/* CAMBIO: Reduje tamaño de imagen de w-14 a w-10 */}
               <img
                 src="/preicmalogo.webp"
                 alt="Logo PRE-ICMA"
@@ -171,7 +170,6 @@ export default function LayoutDashboard({ children }) {
           </div>
         </div>
 
-        {/* CAMBIO: Reduje mb-6 a mb-4 */}
         <div className="grid grid-cols-2 gap-3 mb-4 shrink-0">
           <div className="bg-purple-600/10 backdrop-blur-sm border border-purple-500/30 rounded-xl p-2 text-center hover:scale-105 transition-transform duration-300 cursor-pointer">
             <p className="text-xl font-bold text-purple-400">7</p>
@@ -183,7 +181,6 @@ export default function LayoutDashboard({ children }) {
           </div>
         </div>
 
-        {/* CAMBIO: Reduje gap-3 a gap-2 para juntar más los botones */}
         <nav className="flex flex-col gap-2 flex-1 overflow-y-auto custom-scrollbar">
           <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1 px-2">
             Navegación
@@ -203,7 +200,6 @@ export default function LayoutDashboard({ children }) {
           ))}
         </nav>
 
-        {/* CAMBIO: Ajuste de márgenes para la sección inferior */}
         <div className="mt-2 mb-2 bg-gradient-to-br from-green-600/20 to-emerald-600/20 backdrop-blur-sm border border-green-500/30 rounded-2xl p-3 shrink-0">
           <div className="flex items-center justify-between mb-1">
             <p className="text-[10px] font-semibold text-gray-300">Progreso Diario</p>
