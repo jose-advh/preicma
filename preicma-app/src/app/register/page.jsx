@@ -1,10 +1,12 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // 1. Importar el router
 import { supabase } from "../../lib/supabaseClient";
-import { crearUsuario } from "../../services/usuarioService";
 import Modal from "../../components/Modal";
 
 export default function Register() {
+  const router = useRouter(); // 2. Inicializar el router
+
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
@@ -18,7 +20,18 @@ export default function Register() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleRegister = async () => {
+    // Validación básica antes de enviar
+    if (!formData.nombre || !formData.email || !formData.password || !formData.rol) {
+      setModal({
+        show: true,
+        message: "Por favor completa todos los campos",
+        type: "error",
+      });
+      return;
+    }
+
     try {
+      // 1. Crear usuario en Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -28,6 +41,7 @@ export default function Register() {
       const userId = authData?.user?.id;
       if (!userId) throw new Error("No se pudo obtener el ID del usuario.");
 
+      // 2. Crear registro en tu tabla de usuarios personalizada
       const res = await fetch("/api/usuarios", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -42,18 +56,26 @@ export default function Register() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
 
+      // 3. Mostrar mensaje de éxito
       setModal({
         show: true,
-        message: "¡Cuenta creada! Revisa tu correo para confirmar.",
+        message: "Cuenta creada con éxito. Redirigiendo...",
         type: "success",
       });
 
+      // 4. Limpiar formulario
       setFormData({
         nombre: "",
         email: "",
         password: "",
         rol: "",
       });
+
+      // 5. Redirigir al Login después de 2 segundos
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+
     } catch (error) {
       setModal({
         show: true,
@@ -76,6 +98,7 @@ export default function Register() {
       <img
         src="/preicmalogo.webp"
         className="w-[30%] md:w-[10%] rounded-full"
+        alt="Logo Preicma"
       />
 
       <form
@@ -132,7 +155,7 @@ export default function Register() {
         <button
           type="button"
           onClick={handleRegister}
-          className="bg-black/50 p-2 px-6 rounded-xl text-white font-bold cursor-pointer"
+          className="bg-black/50 p-2 px-6 rounded-xl text-white font-bold cursor-pointer hover:bg-black/70 transition-colors"
         >
           Confirmar
         </button>
