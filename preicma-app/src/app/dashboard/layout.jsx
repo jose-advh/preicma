@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { supabase } from "../../lib/supabaseClient"; 
 
 function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive = false, badge = null }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -87,7 +88,39 @@ function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive
 
 export default function LayoutDashboard({ children }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [leccionesCompletadas, setLeccionesCompletadas] = useState(0); // Estado para el conteo
   const pathname = usePathname(); 
+
+  // --- LÓGICA PARA CONTAR LECCIONES (SIMULACROS ÚNICOS) ---
+  useEffect(() => {
+    const fetchProgreso = async () => {
+      try {
+        // 1. Obtener usuario actual
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          // 2. Traer todos los resultados del usuario (solo necesitamos el id_simulacro)
+          const { data, error } = await supabase
+            .from('resultados')
+            .select('id_simulacro')
+            .eq('id_usuario', user.id);
+
+          if (error) throw error;
+
+          // 3. Filtrar duplicados usando Set
+          // Si el usuario hizo el simulacro 1 (matemáticas) y el simulacro 1 (ciencias),
+          // Set lo contará como 1 solo simulacro completado.
+          const simulacrosUnicos = new Set(data.map(item => item.id_simulacro));
+          
+          setLeccionesCompletadas(simulacrosUnicos.size);
+        }
+      } catch (error) {
+        console.error("Error cargando progreso del sidebar:", error);
+      }
+    };
+
+    fetchProgreso();
+  }, []);
 
   const navLinks = [
     { 
@@ -97,13 +130,13 @@ export default function LayoutDashboard({ children }) {
       color: "#8b5cf6", 
       badge: null 
     },
-    { 
-      href: "/dashboard", 
-      icon: "/icons/mynaui--folder-solid.svg", 
-      label: "Mis Rutas", 
-      color: "#06b6d4", 
-      badge: "3" 
-    },
+    // { 
+    //   href: "/dashboard/rutas", 
+    //   icon: "/icons/mynaui--folder-solid.svg", 
+    //   label: "Mis Rutas", 
+    //   color: "#06b6d4", 
+    //   badge: "3" 
+    // },
     { 
       href: "/dashboard/progreso", 
       icon: "/icons/game-icons--progression.svg", 
@@ -123,16 +156,14 @@ export default function LayoutDashboard({ children }) {
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-950 via-purple-950/20 to-slate-950 text-white overflow-hidden">
       
-      {/* BOTÓN DE MENÚ MODIFICADO */}
+      {/* BOTÓN DE MENÚ (Derecha y sin fondo como pediste) */}
       <button
         onClick={() => setMenuAbierto(!menuAbierto)}
-        // CAMBIOS AQUÍ: left-5 -> right-5, eliminados bg-purple, shadow, etc.
-        className="fixed top-5 right-5 z-[60] md:hidden bg-white rounded-2xl p-2 transition-all duration-300 hover:scale-110 focus:outline-none"
+        className="fixed top-5 right-5 z-[60] md:hidden p-2 transition-all duration-300 hover:scale-110 focus:outline-none"
       >
         <img
           src={menuAbierto ? "/icons/line-md--close.svg" : "/icons/jam--menu.svg"}
           alt="menu"
-          // Agregué drop-shadow para asegurar que se vea bien sobre cualquier fondo
           className="w-8 h-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" 
         />
       </button>
@@ -171,12 +202,15 @@ export default function LayoutDashboard({ children }) {
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-4 shrink-0">
+          {/* Racha fijada en 0 */}
           <div className="bg-purple-600/10 backdrop-blur-sm border border-purple-500/30 rounded-xl p-2 text-center hover:scale-105 transition-transform duration-300 cursor-pointer">
-            <p className="text-xl font-bold text-purple-400">7</p>
+            <p className="text-xl font-bold text-purple-400">0</p>
             <p className="text-[10px] text-gray-400">Racha</p>
           </div>
+          
+          {/* Lecciones Dinámicas */}
           <div className="bg-cyan-600/10 backdrop-blur-sm border border-cyan-500/30 rounded-xl p-2 text-center hover:scale-105 transition-transform duration-300 cursor-pointer">
-            <p className="text-xl font-bold text-cyan-400">24</p>
+            <p className="text-xl font-bold text-cyan-400">{leccionesCompletadas}</p>
             <p className="text-[10px] text-gray-400">Lecciones</p>
           </div>
         </div>

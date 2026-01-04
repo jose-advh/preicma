@@ -227,3 +227,53 @@ export const obtenerPreguntasSimulacro = async (idSimulacro) => {
     throw error;
   }
 };
+
+export const guardarResultados = async (idUsuario, idSimulacro, preguntas, respuestas) => {
+  try {
+    // 1. Identificar las materias únicas presentes en el examen
+    // Usamos Set para eliminar duplicados
+    const idsMaterias = [...new Set(preguntas.map(p => p.id_materia))];
+    
+    const registrosAInsertar = [];
+
+    // 2. Iterar por cada materia para calcular su puntaje individual
+    idsMaterias.forEach(idMateria => {
+      // Filtramos las preguntas que pertenecen a esta materia
+      const preguntasMateria = preguntas.filter(p => p.id_materia === idMateria);
+      const totalPreguntas = preguntasMateria.length;
+      
+      let aciertos = 0;
+
+      // Calculamos aciertos solo de esta materia
+      preguntasMateria.forEach(preg => {
+        if (respuestas[preg.id] === preg.opcion_correcta) {
+          aciertos++;
+        }
+      });
+
+      // Calculamos el resultado (puedes guardarlo como puntaje directo o porcentaje)
+      // Aquí lo guardaré como porcentaje (0-100) entero.
+      const resultadoCalculado = Math.round((aciertos / totalPreguntas) * 100);
+
+      registrosAInsertar.push({
+        id_usuario: idUsuario,
+        id_simulacro: idSimulacro,
+        id_materia: idMateria,
+        resultado: resultadoCalculado // O usa 'aciertos' si prefieres guardar el número crudo
+      });
+    });
+
+    // 3. Insertar todos los registros de una sola vez
+    const { error } = await supabase
+      .from('resultados')
+      .insert(registrosAInsertar);
+
+    if (error) throw error;
+
+    return true;
+
+  } catch (error) {
+    console.error("Error guardando resultados:", error);
+    throw error;
+  }
+};

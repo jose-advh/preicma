@@ -2,7 +2,9 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { obtenerPreguntasSimulacro } from "../../../services/cuadernilloService";
+// IMPORTAMOS la nueva función guardarResultados y supabase para obtener el usuario
+import { obtenerPreguntasSimulacro, guardarResultados } from "../../../services/cuadernilloService";
+import { supabase } from "../../../lib/supabaseClient"; // Asegúrate de importar tu cliente supabase
 
 function ContenidoPrueba() {
   const searchParams = useSearchParams();
@@ -12,37 +14,73 @@ function ContenidoPrueba() {
   const [preguntas, setPreguntas] = useState([]);
   const [indiceActual, setIndiceActual] = useState(0);
   const [respuestas, setRespuestas] = useState({});
-  const [mostrarResultados, setMostrarResultados] = useState(false); // Nuevo estado
+  const [mostrarResultados, setMostrarResultados] = useState(false);
+  
+  // Estados de carga y usuario
   const [loading, setLoading] = useState(true);
+  const [guardando, setGuardando] = useState(false); // Nuevo estado para feedback visual
   const [error, setError] = useState(null);
+  const [userId, setUserId] = useState(null);
 
+  // 1. Cargar Usuario y Preguntas
   useEffect(() => {
-    if (!idSimulacro) {
+    const initData = async () => {
+      if (!idSimulacro) {
         setError("No se especificó un cuadernillo.");
         setLoading(false);
         return;
-    }
-    const cargarPreguntas = async () => {
+      }
+
       try {
+        // Obtener usuario actual
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) setUserId(user.id);
+
+        // Obtener preguntas
         const data = await obtenerPreguntasSimulacro(idSimulacro);
         setPreguntas(data);
       } catch (err) {
         console.error(err);
-        setError("Error al cargar las preguntas.");
+        setError("Error al cargar los datos.");
       } finally {
         setLoading(false);
       }
     };
-    cargarPreguntas();
+    initData();
   }, [idSimulacro]);
+
+  // --- LÓGICA DE FINALIZACIÓN Y GUARDADO ---
+  const finalizarPrueba = async () => {
+    if (!userId) {
+      alert("No se pudo identificar al usuario para guardar los resultados.");
+      setMostrarResultados(true);
+      return;
+    }
+
+    setGuardando(true);
+    try {
+      // Llamamos al servicio para guardar (separa por materias internamente)
+      await guardarResultados(userId, idSimulacro, preguntas, respuestas);
+      
+      // Una vez guardado, mostramos la pantalla de resultados
+      setMostrarResultados(true);
+    } catch (err) {
+      console.error("Error al guardar:", err);
+      // Aún si falla el guardado, mostramos los resultados al usuario
+      // (Podrías mostrar un toast de error aquí si quisieras)
+      setMostrarResultados(true); 
+    } finally {
+      setGuardando(false);
+    }
+  };
 
   // --- NAVEGACIÓN ---
   const siguientePregunta = () => {
     if (indiceActual < preguntas.length - 1) {
       setIndiceActual(prev => prev + 1);
     } else {
-      // Si estamos en la última, finalizamos
-      setMostrarResultados(true);
+      // Si es la última, detonamos el proceso de finalización
+      finalizarPrueba();
     }
   };
 
@@ -51,12 +89,12 @@ function ContenidoPrueba() {
   };
 
   const handleSeleccionarOpcion = (idPregunta, idOpcion) => {
-    if (respuestas[idPregunta]) return; // Bloquear si ya respondió
+    if (respuestas[idPregunta]) return; 
     setRespuestas(prev => ({ ...prev, [idPregunta]: idOpcion }));
   };
 
-  // --- CÁLCULO DE RESULTADOS ---
-  const calcularResultados = () => {
+  // --- CÁLCULO DE RESULTADOS (Para visualización) ---
+  const calcularResultadosGlobales = () => {
     let correctas = 0;
     preguntas.forEach(preg => {
       if (respuestas[preg.id] === preg.opcion_correcta) {
@@ -66,11 +104,22 @@ function ContenidoPrueba() {
     return { correctas, total: preguntas.length };
   };
 
-  // --- RENDERIZADO DE ESTADOS DE CARGA / ERROR ---
+  // --- RENDERIZADO DE CARGA / GUARDADO ---
   if (loading) {
     return (
       <div className="flex h-full min-h-[50vh] items-center justify-center">
         <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // Pantalla de "Guardando resultados..."
+  if (guardando) {
+    return (
+      <div className="flex flex-col h-screen items-center justify-center bg-slate-950 text-white gap-4">
+        <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+        <h2 className="text-xl font-bold animate-pulse">Guardando tu progreso...</h2>
+        <p className="text-gray-400">Analizando respuestas por materia</p>
       </div>
     );
   }
@@ -86,10 +135,9 @@ function ContenidoPrueba() {
 
   // --- VISTA DE RESULTADOS (FINAL) ---
   if (mostrarResultados) {
-    const { correctas, total } = calcularResultados();
+    const { correctas, total } = calcularResultadosGlobales();
     const porcentaje = Math.round((correctas / total) * 100);
     
-    // Mensaje dinámico según puntaje
     let mensaje = "¡Sigue practicando!";
     let colorTexto = "text-gray-300";
     if (porcentaje === 100) { mensaje = "¡Perfecto! Eres un maestro."; colorTexto = "text-yellow-400"; }
@@ -99,13 +147,11 @@ function ContenidoPrueba() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 font-[family-name:var(--font-geist-sans)]">
         <div className="bg-slate-900/60 backdrop-blur-xl border border-purple-500/30 p-8 rounded-3xl shadow-2xl max-w-md w-full text-center relative overflow-hidden">
-          {/* Fondo decorativo */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500" />
           
           <h2 className="text-3xl font-bold text-white mb-2">Resultados</h2>
           <p className={`text-lg font-medium mb-8 ${colorTexto}`}>{mensaje}</p>
 
-          {/* Círculo de Progreso */}
           <div className="relative w-40 h-40 mx-auto mb-8 flex items-center justify-center">
             <svg className="w-full h-full transform -rotate-90">
               <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-gray-800" />
@@ -125,7 +171,7 @@ function ContenidoPrueba() {
 
           <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
-                <p className="text-gray-400">Porcentaje</p>
+                <p className="text-gray-400">Porcentaje Global</p>
                 <p className="text-xl font-bold text-white">{porcentaje}%</p>
              </div>
              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
@@ -289,7 +335,6 @@ function ContenidoPrueba() {
 
         <button
             onClick={siguientePregunta}
-            // Si es la última pregunta, el estilo cambia ligeramente para indicar finalización (opcional)
             className={`flex items-center gap-2 px-5 py-2 rounded-xl font-bold transition-all duration-300 text-sm sm:text-base 
               ${esUltimaPregunta 
                 ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-green-500/30 text-white hover:-translate-y-1 shadow-lg' 
