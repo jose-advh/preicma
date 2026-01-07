@@ -1,13 +1,10 @@
 import { supabase } from "../lib/supabaseClient"; 
 
-// --- FUNCIÓN AUXILIAR (Debe estar afuera de las exportaciones) ---
+// --- FUNCIÓN AUXILIAR ---
 const extraerPathDeUrl = (urlCompleta) => {
   if (!urlCompleta || typeof urlCompleta !== 'string') return null;
-  
-  // Ajusta 'simulacros' si tu bucket se llama diferente
   const bucketName = 'simulacros'; 
   const partes = urlCompleta.split(`/${bucketName}/`);
-  
   if (partes.length > 1) {
     return decodeURIComponent(partes[1]);
   }
@@ -19,9 +16,8 @@ const extraerPathDeUrl = (urlCompleta) => {
 export const obtenerSimulacros = async () => {
   const { data, error } = await supabase
     .from('simulacros')
-    .select('id, titulo, descripcion') // Asegúrate de traer descripción
+    .select('id, titulo, descripcion')
     .eq('estado', 'activo');
-
   if (error) throw error;
   return data;
 };
@@ -31,123 +27,61 @@ export const obtenerMaterias = async () => {
     .from('materias')
     .select('id, nombre')
     .order('nombre');
-
   if (error) throw error;
   return data;
 };
 
-// Función interna para subir imágenes (usada en crearPreguntaCompleta)
-const subirImagen = async (archivo, carpeta) => {
-  const fileExt = archivo.name.split('.').pop();
-  const fileName = `${Date.now()}_${Math.floor(Math.random() * 1000)}.${fileExt}`;
-  const filePath = `${carpeta}/${fileName}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from('simulacros')
-    .upload(filePath, archivo);
-
-  if (uploadError) throw uploadError;
-
-  const { data } = supabase.storage
-    .from('simulacros')
-    .getPublicUrl(filePath);
-
-  return data.publicUrl;
-};
-
-export const crearPreguntaCompleta = async (idSimulacro, idMateria, dataEnunciado, listaImagenesEnunciado, dataPregunta, listaOpciones, indiceCorrecta) => {
+// Función para guardar resultados con upsert
+export const guardarResultados = async (idUsuario, idSimulacro, preguntas, respuestas) => {
   try {
-    const { data: enunciado, error: errorEnunciado } = await supabase
-      .from('enunciados')
-      .insert({ texto: dataEnunciado })
-      .select()
-      .single();
+    const idsMateriasRaw = preguntas.map(p => p.id_materia);
+    const idsMaterias = [...new Set(idsMateriasRaw)].filter(id => id !== null && id !== undefined);
+    
+    if (idsMaterias.length === 0) return false;
 
-    if (errorEnunciado) throw errorEnunciado;
+    const registrosAInsertar = [];
 
-    if (listaImagenesEnunciado.length > 0) {
-      const promesasEnunciadoImg = listaImagenesEnunciado.map(async (item) => {
-        const url = await subirImagen(item.file, 'enunciados');
-        return {
-          id_enunciado: enunciado.id,
-          url: url,
-          orden: parseInt(item.orden) 
-        };
+    idsMaterias.forEach(idMateria => {
+      const preguntasMateria = preguntas.filter(p => p.id_materia === idMateria);
+      const totalPreguntas = preguntasMateria.length;
+      if (totalPreguntas === 0) return;
+
+      let aciertos = 0;
+      preguntasMateria.forEach(preg => {
+        if (String(respuestas[preg.id]) === String(preg.opcion_correcta)) {
+          aciertos++;
+        }
       });
 
-      const imagenesData = await Promise.all(promesasEnunciadoImg);
-      const { error: errorImgBD } = await supabase
-        .from('imagenes_enunciados')
-        .insert(imagenesData);
+      const resultadoCalculado = Math.round((aciertos / totalPreguntas) * 100);
 
-      if (errorImgBD) throw errorImgBD;
-    }
-
-    const { data: pregunta, error: errorPregunta } = await supabase
-      .from('preguntas')
-      .insert({
-        id_enunciado: enunciado.id,
+      registrosAInsertar.push({
+        id_usuario: idUsuario,
         id_simulacro: idSimulacro,
         id_materia: idMateria,
-        pregunta: dataPregunta,
-        opcion_correcta: null
-      })
-      .select()
-      .single();
-
-    if (errorPregunta) throw errorPregunta;
-
-    const opcionesPromises = listaOpciones.map(async (op) => {
-      const textoInsertar = op.tipo === 'texto' ? op.valor : 'Imagen'; 
-      
-      const { data: opcionInsertada, error: errorOp } = await supabase
-        .from('opciones')
-        .insert({
-          id_pregunta: pregunta.id,
-          opcion: textoInsertar
-        })
-        .select()
-        .single();
-
-      if (errorOp) throw errorOp;
-
-      if (op.tipo === 'imagen' && op.file) {
-        const urlImagenOpcion = await subirImagen(op.file, 'opciones');
-        const { error: errorImgOp } = await supabase
-          .from('imagenes_opciones')
-          .insert({
-            id_opcion: opcionInsertada.id,
-            url: urlImagenOpcion
-          }); 
-        if (errorImgOp) throw errorImgOp;
-      }
-
-      return opcionInsertada; 
+        resultado: resultadoCalculado
+      });
     });
 
-    const resultadosOpciones = await Promise.all(opcionesPromises);
+    const { data, error } = await supabase
+      .from('resultados')
+      .upsert(registrosAInsertar, { onConflict: 'id_usuario, id_simulacro, id_materia' }) 
+      .select();
 
-    const idOpcionCorrecta = resultadosOpciones[indiceCorrecta].id;
-
-    const { error: errorUpdate } = await supabase
-      .from('preguntas')
-      .update({ opcion_correcta: idOpcionCorrecta })
-      .eq('id', pregunta.id);
-
-    if (errorUpdate) throw errorUpdate;
-
+    if (error) throw error;
     return true;
 
   } catch (error) {
-    console.error(error);
+    console.error("Error guardando resultados:", error);
     throw error;
   }
 };
 
-// --- AQUÍ ESTÁ LA FUNCIÓN CORREGIDA Y ACTUALIZADA ---
+// --- FUNCIÓN PRINCIPAL DE PREGUNTAS (MODIFICADA) ---
 export const obtenerPreguntasSimulacro = async (idSimulacro) => {
   try {
-    // 1. Consulta a Supabase con la relación explícita
+    // 1. Consulta a Supabase
+    // IMPORTANTE: Agregamos 'orden' en la selección de imagenes_enunciados
     const { data, error } = await supabase
       .from('preguntas')
       .select(`
@@ -159,7 +93,7 @@ export const obtenerPreguntasSimulacro = async (idSimulacro) => {
         enunciados (
           id,
           texto,
-          imagenes_enunciados ( url, orden )
+          imagenes_enunciados ( url, orden ) 
         ),
         materias ( nombre ),
         opciones!opciones_id_pregunta_fkey (
@@ -171,17 +105,13 @@ export const obtenerPreguntasSimulacro = async (idSimulacro) => {
       .eq('id_simulacro', idSimulacro)
       .order('id', { ascending: true });
 
-    if (error) {
-      console.error("🚨 Error SQL Supabase:", error.message, error.details);
-      throw error;
-    }
-
+    if (error) throw error;
     if (!data) return [];
 
     // 2. Procesamiento de URLs firmadas
     const preguntasProcesadas = await Promise.all(data.map(async (pregunta) => {
       
-      // A. Procesar imágenes de Enunciados
+      // A. Procesar imágenes de Enunciados (MANTENIENDO EL ORDEN)
       if (pregunta.enunciados?.imagenes_enunciados?.length > 0) {
         const imgsEnunciado = await Promise.all(pregunta.enunciados.imagenes_enunciados.map(async (img) => {
           if (!img.url) return img;
@@ -189,11 +119,20 @@ export const obtenerPreguntasSimulacro = async (idSimulacro) => {
           const path = extraerPathDeUrl(img.url);
           if (path) {
             const { data: signed } = await supabase.storage.from('simulacros').createSignedUrl(path, 604800);
-            if (signed) return { ...img, url: signed.signedUrl };
+            if (signed) {
+              // AQUÍ ESTÁ LA CLAVE: Retornamos el objeto con la nueva URL pero mantenemos el 'orden' original
+              return { 
+                ...img, 
+                url: signed.signedUrl,
+                orden: img.orden // Aseguramos que el orden viaje al frontend
+              };
+            }
           }
           return img;
         }));
-        pregunta.enunciados.imagenes_enunciados = imgsEnunciado;
+        
+        // Ordenamos el array localmente por si acaso viene desordenado de la BD
+        pregunta.enunciados.imagenes_enunciados = imgsEnunciado.sort((a, b) => a.orden - b.orden);
       }
 
       // B. Procesar imágenes de Opciones
@@ -202,7 +141,6 @@ export const obtenerPreguntasSimulacro = async (idSimulacro) => {
           if (opcion.imagenes_opciones?.length > 0) {
               const imgsOpcion = await Promise.all(opcion.imagenes_opciones.map(async (imgOp) => {
                   if (!imgOp.url) return imgOp;
-
                   const pathOp = extraerPathDeUrl(imgOp.url);
                   if (pathOp) {
                       const { data: signedOp } = await supabase.storage.from('simulacros').createSignedUrl(pathOp, 604800);
@@ -223,57 +161,7 @@ export const obtenerPreguntasSimulacro = async (idSimulacro) => {
     return preguntasProcesadas;
 
   } catch (error) {
-    console.error("🔥 Error CRÍTICO en obtenerPreguntasSimulacro:", error);
-    throw error;
-  }
-};
-
-export const guardarResultados = async (idUsuario, idSimulacro, preguntas, respuestas) => {
-  try {
-    // 1. Identificar las materias únicas presentes en el examen
-    // Usamos Set para eliminar duplicados
-    const idsMaterias = [...new Set(preguntas.map(p => p.id_materia))];
-    
-    const registrosAInsertar = [];
-
-    // 2. Iterar por cada materia para calcular su puntaje individual
-    idsMaterias.forEach(idMateria => {
-      // Filtramos las preguntas que pertenecen a esta materia
-      const preguntasMateria = preguntas.filter(p => p.id_materia === idMateria);
-      const totalPreguntas = preguntasMateria.length;
-      
-      let aciertos = 0;
-
-      // Calculamos aciertos solo de esta materia
-      preguntasMateria.forEach(preg => {
-        if (respuestas[preg.id] === preg.opcion_correcta) {
-          aciertos++;
-        }
-      });
-
-      // Calculamos el resultado (puedes guardarlo como puntaje directo o porcentaje)
-      // Aquí lo guardaré como porcentaje (0-100) entero.
-      const resultadoCalculado = Math.round((aciertos / totalPreguntas) * 100);
-
-      registrosAInsertar.push({
-        id_usuario: idUsuario,
-        id_simulacro: idSimulacro,
-        id_materia: idMateria,
-        resultado: resultadoCalculado // O usa 'aciertos' si prefieres guardar el número crudo
-      });
-    });
-
-    // 3. Insertar todos los registros de una sola vez
-    const { error } = await supabase
-      .from('resultados')
-      .insert(registrosAInsertar);
-
-    if (error) throw error;
-
-    return true;
-
-  } catch (error) {
-    console.error("Error guardando resultados:", error);
+    console.error("Error obteniendo preguntas:", error);
     throw error;
   }
 };

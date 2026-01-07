@@ -96,15 +96,6 @@ const actions = [
     action: () => router.push("/admin/cuadernillo/crear")
 },
 {
-    id: "edit-booklet",
-    title: "Editar Cuadernillos",
-    subtitle: "Gestiona el contenido existente",
-    icon: BookOpenCheck,
-    color: "#06b6d4", 
-    colSpan: "col-span-1", 
-    action: () => router.push("/admin/cuadernillo/gestionar") 
-},
-{
     id: "create-question",
     title: "Crear Preguntas",
     subtitle: "Añade nuevos retos al banco",
@@ -120,7 +111,7 @@ const actions = [
     icon: FileEdit,
     color: "#10b981", 
     colSpan: "col-span-1 md:col-span-2 lg:col-span-2", 
-    action: () => console.log("Editar preguntas")
+    action: () => router.push("/admin/preguntas/editar")
 }
 ];
 

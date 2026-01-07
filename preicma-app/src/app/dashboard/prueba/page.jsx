@@ -2,9 +2,9 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-// IMPORTAMOS la nueva función guardarResultados y supabase para obtener el usuario
 import { obtenerPreguntasSimulacro, guardarResultados } from "../../../services/cuadernilloService";
-import { supabase } from "../../../lib/supabaseClient"; // Asegúrate de importar tu cliente supabase
+import { supabase } from "../../../lib/supabaseClient"; 
+import { CheckCircle } from 'lucide-react'; // Asegúrate de tener instalado lucide-react o elimina esta línea e icono
 
 function ContenidoPrueba() {
   const searchParams = useSearchParams();
@@ -16,9 +16,9 @@ function ContenidoPrueba() {
   const [respuestas, setRespuestas] = useState({});
   const [mostrarResultados, setMostrarResultados] = useState(false);
   
-  // Estados de carga y usuario
+  // Estados de carga
   const [loading, setLoading] = useState(true);
-  const [guardando, setGuardando] = useState(false); // Nuevo estado para feedback visual
+  const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState(null);
 
@@ -32,11 +32,9 @@ function ContenidoPrueba() {
       }
 
       try {
-        // Obtener usuario actual
         const { data: { user } } = await supabase.auth.getUser();
         if (user) setUserId(user.id);
 
-        // Obtener preguntas
         const data = await obtenerPreguntasSimulacro(idSimulacro);
         setPreguntas(data);
       } catch (err) {
@@ -49,7 +47,7 @@ function ContenidoPrueba() {
     initData();
   }, [idSimulacro]);
 
-  // --- LÓGICA DE FINALIZACIÓN Y GUARDADO ---
+  // --- LOGICA DE FINALIZACIÓN ---
   const finalizarPrueba = async () => {
     if (!userId) {
       alert("No se pudo identificar al usuario para guardar los resultados.");
@@ -59,27 +57,20 @@ function ContenidoPrueba() {
 
     setGuardando(true);
     try {
-      // Llamamos al servicio para guardar (separa por materias internamente)
       await guardarResultados(userId, idSimulacro, preguntas, respuestas);
-      
-      // Una vez guardado, mostramos la pantalla de resultados
       setMostrarResultados(true);
     } catch (err) {
       console.error("Error al guardar:", err);
-      // Aún si falla el guardado, mostramos los resultados al usuario
-      // (Podrías mostrar un toast de error aquí si quisieras)
       setMostrarResultados(true); 
     } finally {
       setGuardando(false);
     }
   };
 
-  // --- NAVEGACIÓN ---
   const siguientePregunta = () => {
     if (indiceActual < preguntas.length - 1) {
       setIndiceActual(prev => prev + 1);
     } else {
-      // Si es la última, detonamos el proceso de finalización
       finalizarPrueba();
     }
   };
@@ -93,7 +84,6 @@ function ContenidoPrueba() {
     setRespuestas(prev => ({ ...prev, [idPregunta]: idOpcion }));
   };
 
-  // --- CÁLCULO DE RESULTADOS (Para visualización) ---
   const calcularResultadosGlobales = () => {
     let correctas = 0;
     preguntas.forEach(preg => {
@@ -104,7 +94,6 @@ function ContenidoPrueba() {
     return { correctas, total: preguntas.length };
   };
 
-  // --- RENDERIZADO DE CARGA / GUARDADO ---
   if (loading) {
     return (
       <div className="flex h-full min-h-[50vh] items-center justify-center">
@@ -113,13 +102,11 @@ function ContenidoPrueba() {
     );
   }
 
-  // Pantalla de "Guardando resultados..."
   if (guardando) {
     return (
       <div className="flex flex-col h-screen items-center justify-center bg-slate-950 text-white gap-4">
         <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
         <h2 className="text-xl font-bold animate-pulse">Guardando tu progreso...</h2>
-        <p className="text-gray-400">Analizando respuestas por materia</p>
       </div>
     );
   }
@@ -133,7 +120,6 @@ function ContenidoPrueba() {
     );
   }
 
-  // --- VISTA DE RESULTADOS (FINAL) ---
   if (mostrarResultados) {
     const { correctas, total } = calcularResultadosGlobales();
     const porcentaje = Math.round((correctas / total) * 100);
@@ -148,12 +134,14 @@ function ContenidoPrueba() {
       <div className="min-h-screen flex items-center justify-center p-4 font-[family-name:var(--font-geist-sans)]">
         <div className="bg-slate-900/60 backdrop-blur-xl border border-purple-500/30 p-8 rounded-3xl shadow-2xl max-w-md w-full text-center relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500" />
-          
           <h2 className="text-3xl font-bold text-white mb-2">Resultados</h2>
           <p className={`text-lg font-medium mb-8 ${colorTexto}`}>{mensaje}</p>
-
+          
           <div className="relative w-40 h-40 mx-auto mb-8 flex items-center justify-center">
-            <svg className="w-full h-full transform -rotate-90">
+             <div className="absolute inset-0 flex items-center justify-center text-4xl font-bold text-white">
+                {porcentaje}%
+             </div>
+             <svg className="w-full h-full transform -rotate-90">
               <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-gray-800" />
               <circle 
                 cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="10" fill="transparent" 
@@ -163,26 +151,11 @@ function ContenidoPrueba() {
                 strokeLinecap="round"
               />
             </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-bold text-white">{correctas}/{total}</span>
-              <span className="text-xs text-gray-400 uppercase tracking-widest">Aciertos</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
-             <div className="bg-white/5 p-3 rounded-xl border border-white/10">
-                <p className="text-gray-400">Porcentaje Global</p>
-                <p className="text-xl font-bold text-white">{porcentaje}%</p>
-             </div>
-             <div className="bg-white/5 p-3 rounded-xl border border-white/10">
-                <p className="text-gray-400">Respondidas</p>
-                <p className="text-xl font-bold text-white">{Object.keys(respuestas).length}/{total}</p>
-             </div>
           </div>
 
           <Link 
             href="/dashboard"
-            className="block w-full py-3.5 rounded-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-900/40 hover:shadow-purple-500/40 hover:-translate-y-1 transition-all duration-300"
+            className="block w-full py-3.5 rounded-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:-translate-y-1 transition-all duration-300"
           >
             Volver al Dashboard
           </Link>
@@ -191,33 +164,52 @@ function ContenidoPrueba() {
     );
   }
 
-  // --- VISTA DE PREGUNTAS (NORMAL) ---
+  // --- VARIABLES PREGUNTA ACTUAL ---
   const preguntaActual = preguntas[indiceActual];
   const materiaNombre = preguntaActual.materias?.nombre || "General";
   
   const enunciadoData = preguntaActual.enunciados;
   const enunciadoTexto = enunciadoData?.texto || "";
   const listaImagenes = enunciadoData?.imagenes_enunciados || [];
-  const imagenesArriba = listaImagenes.filter(img => img.orden === 1);
+
+  // =======================================================
+  // NUEVA LÓGICA DIVIDIDA (Externas vs Intercalada)
+  // =======================================================
+
+  // 1. Imágenes EXTERNAS: Cualquier imagen que NO sea orden 2 (ej: 1, 3, 4)
+  // Estas se mostrarán siempre juntas en un bloque antes del texto.
+  const imagenesExternas = listaImagenes
+    .filter(img => img.orden !== 2)
+    .sort((a, b) => a.orden - b.orden);
+
+  // 2. Imagen INTERCALADA: Exclusivamente Orden 2
   const imagenIntercalada = listaImagenes.find(img => img.orden === 2);
-  const imagenesAbajo = listaImagenes.filter(img => img.orden >= 3);
+  const usaIntercaladaEnTexto = imagenIntercalada && enunciadoTexto.includes("{imagen}");
 
   const opciones = preguntaActual.opciones || [];
   const respuestaUsuario = respuestas[preguntaActual.id];
   const yaRespondido = respuestaUsuario !== undefined;
 
+  // Renderizado del texto reemplazando {imagen} por la imagen orden 2
   const renderizarTextoEnunciado = () => {
     if (!enunciadoTexto) return null;
-    if (imagenIntercalada && enunciadoTexto.includes("{imagen}")) {
+    
+    // Solo si aplica, hacemos el split
+    if (usaIntercaladaEnTexto) {
       const partes = enunciadoTexto.split("{imagen}");
       return (
         <div className="text-gray-300 leading-relaxed text-lg">
           {partes.map((parte, index) => (
             <span key={index}>
               <span className="whitespace-pre-wrap">{parte}</span>
+              {/* Insertamos imagen orden 2 en los huecos */}
               {index < partes.length - 1 && (
                 <div className="my-4 rounded-lg overflow-hidden border border-gray-600/50 inline-block w-full">
-                   <img src={imagenIntercalada.url} alt="Contexto" className="w-full h-auto object-contain max-h-[400px]" />
+                   <img 
+                     src={imagenIntercalada.url} 
+                     alt="Contexto visual" 
+                     className="w-full h-auto object-contain max-h-[400px]" 
+                   />
                 </div>
               )}
             </span>
@@ -225,6 +217,7 @@ function ContenidoPrueba() {
         </div>
       );
     }
+    // Texto normal si no hay imagen orden 2
     return <p className="text-gray-300 leading-relaxed whitespace-pre-wrap text-lg">{enunciadoTexto}</p>;
   };
 
@@ -252,33 +245,39 @@ function ContenidoPrueba() {
         {(enunciadoTexto || listaImagenes.length > 0) && (
           <div className="bg-slate-800/50 border-l-4 border-cyan-500 p-5 rounded-r-xl rounded-bl-xl backdrop-blur-sm shadow-sm">
             <h3 className="text-cyan-400 text-xs font-bold uppercase tracking-wider mb-4">Lectura de contexto</h3>
-            {imagenesArriba.length > 0 && (
+            
+            {/* ---------------------------------------------------------
+                PASO 1: Insertar TODAS las imágenes externas (1, 3, etc.)
+               --------------------------------------------------------- */}
+            {imagenesExternas.length > 0 && (
               <div className="mb-4 flex flex-col gap-4">
-                {imagenesArriba.map((img, idx) => (
+                {imagenesExternas.map((img, idx) => (
                   <div key={idx} className="rounded-lg overflow-hidden border border-gray-600/50">
-                    <img src={img.url} alt="Contexto superior" className="w-full h-auto object-contain max-h-[400px]" />
+                    <img 
+                      src={img.url} 
+                      alt={`Contexto ${img.orden}`} 
+                      className="w-full h-auto object-contain max-h-[400px]" 
+                    />
                   </div>
                 ))}
               </div>
             )}
+
+            {/* ---------------------------------------------------------
+                PASO 2: Insertar el TEXTO (con la imagen 2 intercalada)
+               --------------------------------------------------------- */}
             {renderizarTextoEnunciado()}
-            {imagenesAbajo.length > 0 && (
-              <div className="mt-4 flex flex-col gap-4">
-                {imagenesAbajo.map((img, idx) => (
-                  <div key={idx} className="rounded-lg overflow-hidden border border-gray-600/50">
-                    <img src={img.url} alt="Contexto inferior" className="w-full h-auto object-contain max-h-[400px]" />
-                  </div>
-                ))}
-              </div>
-            )}
+            
           </div>
         )}
 
+        {/* Tarjeta de Pregunta */}
         <div className="bg-slate-900/40 border border-purple-500/20 p-6 rounded-2xl shadow-lg backdrop-blur-md">
             <h3 className="text-purple-400 text-xs font-bold uppercase tracking-wider mb-3">Pregunta</h3>
             <p className="text-xl text-white font-medium leading-relaxed">{preguntaActual.pregunta}</p>
         </div>
 
+        {/* Opciones */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {opciones.map((opcion) => {
             const esLaCorrecta = opcion.id === preguntaActual.opcion_correcta;
@@ -300,7 +299,7 @@ function ContenidoPrueba() {
               >
                 {yaRespondido && esLaCorrecta && (
                     <div className="absolute top-3 right-3 bg-green-500 text-black rounded-full p-1 shadow-lg z-10">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                        <CheckCircle className="w-4 h-4" />
                     </div>
                 )}
                 {yaRespondido && fueSeleccionada && !esLaCorrecta && (
@@ -310,7 +309,9 @@ function ContenidoPrueba() {
                 )}
 
                 <div className="w-full">
-                    {opcion.opcion && <span className="text-white font-medium text-lg block mb-2">{opcion.opcion}</span>}
+                    {opcion.opcion && opcion.opcion !== "Imagen" && (
+                      <span className="text-white font-medium text-lg block mb-2">{opcion.opcion}</span>
+                    )}
                     {opcion.imagenes_opciones && opcion.imagenes_opciones.length > 0 && (
                         <div className="mt-2 rounded-lg overflow-hidden border border-white/10 bg-black/20">
                             <img src={opcion.imagenes_opciones[0].url} alt="Opción" className="w-full h-48 object-contain bg-black/40" />
@@ -329,7 +330,6 @@ function ContenidoPrueba() {
             disabled={indiceActual === 0}
             className={`flex items-center gap-2 px-5 py-2 rounded-xl font-bold transition-all duration-300 text-sm sm:text-base ${indiceActual === 0 ? 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-50' : 'bg-slate-800 text-white hover:bg-slate-700 hover:-translate-x-1 border border-gray-700'}`}
         >
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
             Anterior
         </button>
 
@@ -343,11 +343,6 @@ function ContenidoPrueba() {
             `}
         >
             {esUltimaPregunta ? "Finalizar" : "Siguiente"}
-            {esUltimaPregunta ? (
-               <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>
-            ) : (
-               <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
-            )}
         </button>
       </footer>
     </div>
