@@ -88,18 +88,30 @@ function SidebarLink({ href = "#", icon, alt, label, color = "#a60ffa", isActive
 
 export default function LayoutDashboard({ children }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const [leccionesCompletadas, setLeccionesCompletadas] = useState(0); // Estado para el conteo
+  const [leccionesCompletadas, setLeccionesCompletadas] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false); // <--- NUEVO ESTADO PARA ADMIN
   const pathname = usePathname(); 
 
-  // --- LÓGICA PARA CONTAR LECCIONES (SIMULACROS ÚNICOS) ---
   useEffect(() => {
-    const fetchProgreso = async () => {
+    const fetchDatosUsuario = async () => {
       try {
         // 1. Obtener usuario actual
         const { data: { user } } = await supabase.auth.getUser();
         
         if (user) {
-          // 2. Traer todos los resultados del usuario (solo necesitamos el id_simulacro)
+          // --- NUEVA LÓGICA: VERIFICAR ROL DE ADMIN ---
+          const { data: usuarioData, error: usuarioError } = await supabase
+            .from('usuarios')
+            .select('rol')
+            .eq('id', user.id) // Asumiendo que la PK en 'usuarios' es el mismo UUID que auth
+            .single();
+            
+          if (!usuarioError && usuarioData?.rol === 'admin') {
+            setIsAdmin(true);
+          }
+          // ---------------------------------------------
+
+          // 2. Traer resultados (Lógica existente)
           const { data, error } = await supabase
             .from('resultados')
             .select('id_simulacro')
@@ -107,21 +119,19 @@ export default function LayoutDashboard({ children }) {
 
           if (error) throw error;
 
-          // 3. Filtrar duplicados usando Set
-          // Si el usuario hizo el simulacro 1 (matemáticas) y el simulacro 1 (ciencias),
-          // Set lo contará como 1 solo simulacro completado.
+          // 3. Filtrar duplicados
           const simulacrosUnicos = new Set(data.map(item => item.id_simulacro));
-          
           setLeccionesCompletadas(simulacrosUnicos.size);
         }
       } catch (error) {
-        console.error("Error cargando progreso del sidebar:", error);
+        console.error("Error cargando datos del usuario:", error);
       }
     };
 
-    fetchProgreso();
+    fetchDatosUsuario();
   }, []);
 
+  // Definición base de links
   const navLinks = [
     { 
       href: "/dashboard", 
@@ -130,13 +140,6 @@ export default function LayoutDashboard({ children }) {
       color: "#8b5cf6", 
       badge: null 
     },
-    // { 
-    //   href: "/dashboard/rutas", 
-    //   icon: "/icons/mynaui--folder-solid.svg", 
-    //   label: "Mis Rutas", 
-    //   color: "#06b6d4", 
-    //   badge: "3" 
-    // },
     { 
       href: "/dashboard/progreso", 
       icon: "/icons/game-icons--progression.svg", 
@@ -153,10 +156,20 @@ export default function LayoutDashboard({ children }) {
     },
   ];
 
+  if (isAdmin) {
+    navLinks.push({
+      href: "/admin", 
+      icon: "/icons/eos-icons--admin.svg", 
+      label: "Admin Panel",
+      color: "#ff0055", 
+      badge: "SUDO"
+    });
+  }
+
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-950 via-purple-950/20 to-slate-950 text-white overflow-hidden">
       
-      {/* BOTÓN DE MENÚ (Derecha y sin fondo como pediste) */}
+      {/* BOTÓN DE MENÚ MOBILE */}
       <button
         onClick={() => setMenuAbierto(!menuAbierto)}
         className="fixed top-5 right-5 z-[60] md:hidden p-2 bg-white rounded-2xl transition-all duration-300 hover:scale-110 focus:outline-none"
@@ -177,9 +190,9 @@ export default function LayoutDashboard({ children }) {
         ${menuAbierto ? "translate-x-0" : "-translate-x-full"} 
         md:translate-x-0`}
       >
+        {/* HEADER DEL SIDEBAR (Igual que antes) */}
         <div className="relative bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-3 mb-4 overflow-hidden shrink-0">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
-          
           <div className="relative flex items-center gap-3">
             <div className="relative">
               <img
@@ -201,20 +214,19 @@ export default function LayoutDashboard({ children }) {
           </div>
         </div>
 
+        {/* STATS (Igual que antes) */}
         <div className="grid grid-cols-2 gap-3 mb-4 shrink-0">
-          {/* Racha fijada en 0 */}
           <div className="bg-purple-600/10 backdrop-blur-sm border border-purple-500/30 rounded-xl p-2 text-center hover:scale-105 transition-transform duration-300 cursor-pointer">
             <p className="text-xl font-bold text-purple-400">0</p>
             <p className="text-[10px] text-gray-400">Racha</p>
           </div>
-          
-          {/* Lecciones Dinámicas */}
           <div className="bg-cyan-600/10 backdrop-blur-sm border border-cyan-500/30 rounded-xl p-2 text-center hover:scale-105 transition-transform duration-300 cursor-pointer">
             <p className="text-xl font-bold text-cyan-400">{leccionesCompletadas}</p>
             <p className="text-[10px] text-gray-400">Lecciones</p>
           </div>
         </div>
 
+        {/* NAVEGACIÓN DINÁMICA */}
         <nav className="flex flex-col gap-2 flex-1 overflow-y-auto custom-scrollbar">
           <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1 px-2">
             Navegación
@@ -234,6 +246,7 @@ export default function LayoutDashboard({ children }) {
           ))}
         </nav>
 
+        {/* PROGRESS BAR (Igual que antes) */}
         <div className="mt-2 mb-2 bg-gradient-to-br from-green-600/20 to-emerald-600/20 backdrop-blur-sm border border-green-500/30 rounded-2xl p-3 shrink-0">
           <div className="flex items-center justify-between mb-1">
             <p className="text-[10px] font-semibold text-gray-300">Progreso Diario</p>

@@ -1,17 +1,18 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // 1. Importar el router
+import { useRouter } from "next/navigation"; 
 import { supabase } from "../../lib/supabaseClient";
 import Modal from "../../components/Modal";
 
 export default function Register() {
-  const router = useRouter(); // 2. Inicializar el router
+  const router = useRouter(); 
 
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
     password: "",
     rol: "",
+    adminCode: "", // Nuevo campo para el código
   });
 
   const [modal, setModal] = useState({ show: false, message: "", type: "" });
@@ -20,7 +21,7 @@ export default function Register() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleRegister = async () => {
-    // Validación básica antes de enviar
+    // 1. Validación de campos vacíos básicos
     if (!formData.nombre || !formData.email || !formData.password || !formData.rol) {
       setModal({
         show: true,
@@ -30,8 +31,20 @@ export default function Register() {
       return;
     }
 
+    // 2. Validación ESPECÍFICA para Educador (Admin)
+    if (formData.rol === "admin") {
+      if (formData.adminCode !== "03262730") {
+        setModal({
+          show: true,
+          message: "Código de educador inválido. Acceso denegado.",
+          type: "error",
+        });
+        return; // Detenemos la ejecución si el código no coincide
+      }
+    }
+
     try {
-      // 1. Crear usuario en Supabase Auth
+      // 3. Crear usuario en Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -41,7 +54,7 @@ export default function Register() {
       const userId = authData?.user?.id;
       if (!userId) throw new Error("No se pudo obtener el ID del usuario.");
 
-      // 2. Crear registro en tu tabla de usuarios personalizada
+      // 4. Crear registro en tu tabla de usuarios personalizada
       const res = await fetch("/api/usuarios", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -56,22 +69,23 @@ export default function Register() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
 
-      // 3. Mostrar mensaje de éxito
+      // 5. Mostrar mensaje de éxito
       setModal({
         show: true,
         message: "Cuenta creada con éxito. Redirigiendo...",
         type: "success",
       });
 
-      // 4. Limpiar formulario
+      // Limpiar formulario
       setFormData({
         nombre: "",
         email: "",
         password: "",
         rol: "",
+        adminCode: "",
       });
 
-      // 5. Redirigir al Login después de 2 segundos
+      // Redirigir al Login después de 2 segundos
       setTimeout(() => {
         router.push("/");
       }, 2000);
@@ -102,7 +116,7 @@ export default function Register() {
       />
 
       <form
-        className="flex flex-col items-center gap-5 w-[90%] md:w-[35%] h-[60vh] p-4"
+        className="flex flex-col items-center gap-5 w-[90%] md:w-[35%] h-auto py-10 p-4"
         onSubmit={(e) => e.preventDefault()}
       >
         <h2 className="text-3xl text-center text-white font-bold">
@@ -144,6 +158,22 @@ export default function Register() {
               <option value="Estudiante">Estudiante</option>
               <option value="admin">Educador</option>
             </select>
+
+            {/* INPUT CONDICIONAL: Solo aparece si el rol es admin */}
+            {formData.rol === "admin" && (
+              <div className="animate-fade-in-down">
+                <input
+                  name="adminCode"
+                  type="text" // Tipo texto para evitar flechas de número, o "password" si quieres ocultarlo
+                  value={formData.adminCode}
+                  onChange={handleChange}
+                  className="shadow-md p-2 rounded-xl w-full border-2 border-yellow-400 bg-yellow-50 text-black placeholder-gray-500"
+                  placeholder="Ingresa código de Educador"
+                />
+                <p className="text-xs text-yellow-300 mt-1 ml-1">* Código requerido para este rol</p>
+              </div>
+            )}
+
           </div>
           <p className="text-white mt-5">
             ¿Ya tienes una cuenta?{" "}
